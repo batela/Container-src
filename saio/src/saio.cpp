@@ -24,7 +24,7 @@ int main() {
 
 
     try{
-    	//log4cpp::PropertyConfigurator::configure( "../cnf/log4cpp.properties" );
+    	log4cpp::PropertyConfigurator::configure( "../cnf/log4cpp.properties" );
     	log_root.error("root error");
     	log_root.warn("root warn");
 
