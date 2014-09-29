@@ -27,6 +27,8 @@ int main() {
     	//log4cpp::PropertyConfigurator::configure( "../cnf/log4cpp.properties" );
     	log_root.error("root error");
     	log_root.warn("root warn");
+
+
     }
     catch( log4cpp::ConfigureFailure &e ){
     	cout << "adfsfafs" << e.what() << endl; // prints !!!Hello World!!!
