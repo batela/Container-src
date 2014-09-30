@@ -1,0 +1,8 @@
+## A2PBEER configuration file - This is a comment
+## Autor: Borja Tellado
+## Company: Tecnalia
+
+
+tcpport=2319
+eventqueue=MY.FIRST.QUEUE
+logproperties=/home/borja/Prj/A2PBEER/log4cpp.properties
