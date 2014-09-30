@@ -28,7 +28,7 @@ public:
 	int leer (char buffer[]);
 	int escribir (char buffer[], int count);
 private:
-	int baudrate = 0;
+	int baudrate;
 	SerialStream serial_port ;
 };
 

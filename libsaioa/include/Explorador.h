@@ -26,7 +26,7 @@ public:
 	void LanzarExplorador ();
 	friend void *lector( void *ptr );
 	int Enviar (int longitud, Orden orden );
-	bool sigue = false;
+	bool sigue ;
 	Puerto * getPuerto (){return puerto;}
 private:
 	Enlace* enlace;
