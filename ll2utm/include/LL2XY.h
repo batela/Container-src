@@ -16,6 +16,8 @@
 using namespace std;
 namespace container {
 
+
+
 class LL2XY {
 public:
 	LL2XY();

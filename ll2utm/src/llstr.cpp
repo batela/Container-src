@@ -215,6 +215,7 @@ eLongLat CLongLatString::GetLongLat()
 	return eLL;
 }
 
+
 void CLongLatString::ConvertStringToDouble(std::string strIF)
 {
 	using namespace std;

@@ -16,6 +16,7 @@ void SwissGridtoLL(const double SwissNorthing, const double SwissEasting,
 					double& Lat, double& Long);
 
 
+
 class Ellipsoid
 {
 public:

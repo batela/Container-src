@@ -6,3 +6,5 @@
 tcpport=2319
 eventqueue=MY.FIRST.QUEUE
 logproperties=/home/borja/Prj/A2PBEER/log4cpp.properties
+latbase=43.342376
+lonbase=-3.041815

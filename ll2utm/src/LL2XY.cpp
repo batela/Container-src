@@ -57,6 +57,7 @@ void LL2XY::getDistance (string lat, string lon, float &d){
 	float a = 0;
 	float c = 0;
 	int R = 6371;
+
 	float rLat;
 	float rLon;
 	CLongLatString strLat(lat,"HDDMM.mmm",LL_LATITUDE);

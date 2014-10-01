@@ -51,6 +51,7 @@
 #include <string.h>
 
 
+
 enum eLongLat	{	LL_UNKNOWN, LL_LONGITUDE, LL_LATITUDE, LL_ERROR	};
 const static std::string DEFAULT_COORD_FORMAT = "%H%D %m";
 #define LONG_LAT_STRING_ERROR_CHECK	// Comment this out to remove error checking from the code - this is mostly range checking
