@@ -11,5 +11,6 @@
 #include "log4cpp/NDC.hh"
 #include "log4cpp/PropertyConfigurator.hh"
 
+#include "Env.h"
 
 #endif
