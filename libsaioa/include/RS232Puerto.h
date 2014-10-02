@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <SerialStream.h>
+#include "Env.h"
 
 using namespace LibSerial ;
 using namespace std;

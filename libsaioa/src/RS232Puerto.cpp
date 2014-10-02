@@ -9,6 +9,7 @@
 
 namespace container {
 
+	//log4cpp::Category &log  = log4cpp::Category::getRoot();
 	RS232Puerto::RS232Puerto(string id,int baudrate) : Puerto(id,RS232){
 		setName(id);
 	}
@@ -18,6 +19,7 @@ namespace container {
 	}
 
 	int RS232Puerto::abrir(){
+		//log.info("%s: %s %s",__FILE__, "Comienza abrir puerto..",this->getName().data());
 		serial_port.Open( this->getName()) ;
 		if ( ! serial_port.good() ) {
 			return -1;
@@ -77,6 +79,7 @@ namespace container {
 			if (count < 255) buffer[count++] = next_byte;
 		}
 		if (count >= 255) count = -1;
+		else buffer[count]= 0 ;
 		return count;
 	}
 

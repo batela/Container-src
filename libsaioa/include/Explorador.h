@@ -12,9 +12,11 @@
 #include <iostream>
 #include <fstream>
 #include <pthread.h>
+#include <unistd.h>
 #include "Enlace.h"
 #include "Puerto.h"
 #include "Orden.h"
+#include "Env.h"
 
 using namespace std;
 namespace container {
@@ -28,6 +30,7 @@ public:
 	int Enviar (int longitud, Orden orden );
 	bool sigue ;
 	Puerto * getPuerto (){return puerto;}
+	Enlace * getEnlace (){return enlace;}
 private:
 	Enlace* enlace;
 	Puerto* puerto;

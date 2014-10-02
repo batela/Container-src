@@ -1,16 +1,10 @@
-#ifndef LL2XY_H_
-#define LL2XY_H_
-
-#include "log4cpp/Category.hh"
-#include "log4cpp/Appender.hh"
-#include "log4cpp/OstreamAppender.hh"
-#include "log4cpp/FileAppender.hh"
-#include "log4cpp/Layout.hh"
-#include "log4cpp/BasicLayout.hh"
-#include "log4cpp/Priority.hh"
-#include "log4cpp/NDC.hh"
-#include "log4cpp/PropertyConfigurator.hh"
+#ifndef SAIOA_H_
+#define SAIOA_H_
 
 #include "Env.h"
-
+#include "RS232Puerto.h"
+#include "GPSEnlace.h"
+#include "Explorador.h"
+#include "IOEnlace.h"
+#include "I2CPuerto.h"
 #endif

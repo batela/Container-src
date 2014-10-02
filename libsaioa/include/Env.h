@@ -7,6 +7,7 @@
 
 #ifndef ENV_H_
 #define ENV_H_
+
 #include 	<iostream>
 #include 	<string>
 #include	<fstream>
@@ -26,9 +27,7 @@
 #include "log4cpp/PropertyConfigurator.hh"
 using namespace std;
 
-namespace a2pbeer {
-
-log4cpp::Category &log = log4cpp::Category::getRoot();
+namespace container {
 
 class Env {
 public:
@@ -48,5 +47,5 @@ private:
 	vector<std::string> split(const std::string &s, char delim) ;
 };
 
-} /* namespace a2pbeer */
+} /* namespace container */
 #endif /* ENV_H_ */
