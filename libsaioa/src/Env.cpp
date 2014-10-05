@@ -7,12 +7,14 @@
 
 #include "../include/Env.h"
 
+
 namespace container {
+log4cpp::Category &log  = log4cpp::Category::getRoot();
 
 bool Env::initialized= false ;
 Env* Env::env = NULL;
 string Env::configFile = "/home/tecnalia/a2pbeer.cfg" ;
-log4cpp::Category &log = log4cpp::Category::getRoot();
+
 
 Env::Env() {
 	ReadFile();

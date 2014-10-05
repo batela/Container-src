@@ -25,6 +25,7 @@
 #include "log4cpp/Priority.hh"
 #include "log4cpp/NDC.hh"
 #include "log4cpp/PropertyConfigurator.hh"
+
 using namespace std;
 
 namespace container {

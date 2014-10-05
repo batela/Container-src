@@ -7,8 +7,9 @@
 
 #include "../include/Explorador.h"
 
-namespace container {
 
+namespace container {
+extern log4cpp::Category &log;
 
 void* lector (void * explorador){
 	Explorador * exp = (Explorador*)explorador;
@@ -43,9 +44,9 @@ Explorador::~Explorador() {
 }
 
 void Explorador::LanzarExplorador (){
-	//log.info("%s: %s", __FILE__, "Abriendo puerto");
-	//if (puerto->abrir() != 0) log.error("%s: %s", __FILE__, "Error abriendo puerto!!");
-	int res = puerto->abrir() ;
+	log.info("%s: %s", __FILE__, "Abriendo puerto");
+	if (puerto->abrir() != 0) log.error("%s: %s", __FILE__, "Error abriendo puerto!!");
+	//int res = puerto->abrir() ;
 	sigue = true;
 	int iret1 = pthread_create( &idThLector, NULL, lector, this);
 

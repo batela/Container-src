@@ -14,7 +14,7 @@ class Enlace {
 public:
 	Enlace();
 	virtual ~Enlace();
-	virtual int analizaTrama(char * buffer) {return 0;} :
+	virtual int analizaTrama(char * buffer) {return 0;};
 };
 
 } /* namespace container */

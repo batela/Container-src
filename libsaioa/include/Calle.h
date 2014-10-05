@@ -31,8 +31,12 @@ public:
 	void setYf(float yf) 	{	Yf = yf;	}
 	float getYi() const 	{	return Yi;	}
 	void setYi(float yi) 	{	Yi = yi;	}
+	int getId() {return id;};
+	void setId(int a) {id = a;};
 
+	int CrearRecta();
 private:
+	int id;
 	float Xi;
 	float Yi;
 	float Xf;
@@ -42,6 +46,9 @@ private:
 	float a2;
 	float a3;
 	float a4;
+	//Parametros para definir la recta
+	float pendienteRecta;
+	float offsetRecta;
 };
 
 #endif /* CALLE_H_ */
