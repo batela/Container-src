@@ -12,16 +12,28 @@ namespace container {
 extern log4cpp::Category &log;
 
 void* lector (void * explorador){
+	log.info("%s: %s %s",__FILE__, "Lanzado thread lector...");
+
 	Explorador * exp = (Explorador*)explorador;
 	char buffer[256];
+	int res = 0 ;
 	while (exp->sigue){
-		buffer[0]= 0;
-		if (exp->getPuerto()->leer(buffer)>0){
-			printf ("Leido %s\n",buffer);
-			exp->getEnlace()->analizaTrama(buffer);
-			buffer[0]= 0;
+		if (exp->getPuerto()->getIsOpen()== false) {
+			exp->getPuerto()->abrir();
 		}
-		printf ("..");
+		else {
+			exp->getEnlace()->rxbuffer[0]= 0;
+			res = exp->getPuerto()->leer(exp->getEnlace()->rxbuffer);
+		}
+		if (res >0){
+			log.debug("%s: %s %s",__FILE__, "Trama recibida..", buffer);
+			exp->getEnlace()->analizaTrama(exp->getEnlace()->rxbuffer);
+			exp->getEnlace()->rxbuffer[0]= 0;
+		}
+		else if (res < 0){
+			exp->getPuerto()->cerrar();
+		}
+		log.info("%s: %s",__FILE__, "Esperamos trama un segundo..");
 		sleep (1);
 	}
 	printf ("Salimos");
@@ -55,4 +67,10 @@ int Explorador::Enviar (int longitud, Orden orden ){
 	return 0 ;
 }
 
+int Explorador::Enviar (int longitud,char *buffer ){
+	if (sigue == false) puerto->abrir();
+	puerto->escribir(buffer,longitud);
+	if (sigue == false) puerto->cerrar();
+	return 0 ;
+}
 } /* namespace container */

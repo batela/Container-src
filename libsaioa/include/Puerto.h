@@ -26,11 +26,13 @@ public:
 	void setName (string a){name = a;}
 	virtual int leer (char buffer[]){return 0 ;}
 	virtual int abrir (){return 0 ;}
+	virtual void cerrar ();
 	virtual int escribir (char buffer[], int count){return 0;}
 private:
 	bool 			isOpen;
 	PORT_TYPE type;
 	string 		name ;
+
 };
 
 } /* namespace container */

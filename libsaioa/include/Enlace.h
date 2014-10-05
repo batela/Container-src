@@ -15,6 +15,9 @@ public:
 	Enlace();
 	virtual ~Enlace();
 	virtual int analizaTrama(char * buffer) {return 0;};
+	char txbuffer[256];
+	char rxbuffer[256];
+
 };
 
 } /* namespace container */

@@ -28,6 +28,7 @@ public:
 	void LanzarExplorador ();
 	friend void *lector( void *ptr );
 	int Enviar (int longitud, Orden orden );
+	int Enviar (int longitud, char* buffer );
 	bool sigue ;
 	Puerto * getPuerto (){return puerto;}
 	Enlace * getEnlace (){return enlace;}

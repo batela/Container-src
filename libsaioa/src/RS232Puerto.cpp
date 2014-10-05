@@ -58,6 +58,7 @@ extern log4cpp::Category &log;
 		if ( ! serial_port.good() ){
 			return(-1) ;
 		}
+		log.info("%s: %s",__FILE__, "Puerto abierto!!");
 		return 0 ;
 	}
 
