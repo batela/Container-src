@@ -8,3 +8,5 @@ eventqueue=MY.FIRST.QUEUE
 logproperties=/home/borja/Prj/Container/log4cpp.properties
 latbase=43.342376
 lonbase=-3.041815
+elipsoide=23
+umbralcalle=500

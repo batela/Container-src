@@ -33,7 +33,7 @@ public:
 	void setLongitude (float a) {Olongitude = a ;}
 	void setX (float a) {X = a ;}
 	void setY (float a) {Y = a ;}
-
+	double findDistanceToSegment(double x1, double y1, double x2, double y2, double pointX, double pointY,double &linePX, double &linePY);
 	void getDistance (string lat, string lon, float &d);
 private:
 	float Olatitude; //en grados decimales
