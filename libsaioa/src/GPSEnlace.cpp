@@ -13,7 +13,7 @@ extern log4cpp::Category &log;
 
 GPSEnlace::GPSEnlace() {
 	// TODO Auto-generated constructor stub
-	log.info("ddd");
+
 }
 
 GPSEnlace::~GPSEnlace() {
@@ -33,18 +33,30 @@ int GPSEnlace::analizaTrama(char buffer[]){
 }
 
 int GPSEnlace::completaGPS (vector<std::string> items, GPS &gps){
+	log.info("%s: %s",__FILE__, "Comenzando funcion..");
+
 	int res = 1;
+	log.debug("%s: %s  %d",__FILE__, "Array de datos longitud: " ,items.size()  );
 	if (items.size() == GPSEnlace::LONGITUD_GPGGA){
+
+		string stLatAux = items[3] + items[2] ;
+		string stLonAux = items[5]+ items[4] ;
+		log.debug("%s: %s  %s %s",__FILE__, "Coordenadas: " ,stLatAux.data(),stLonAux.data()  );
+		CLongLatString strLat(stLatAux,"HDDMM.mmmmmmm",LL_LATITUDE);
+		CLongLatString strLon(stLonAux,"HDDDMM.mmmmmmm",LL_LONGITUDE);
+
+
 		gps.setFecha(atoi(items[1].data()));
-		gps.setLatitud(atof(items[2].data()));
+		gps.setLatitud(strLat.GetDecimalDegree());
 		gps.setCLatitud(items[3].data()[0]);
-		gps.setLongitud(atof(items[4].data()));
+		gps.setLongitud(strLon.GetDecimalDegree());
 		gps.setCLongitud(items[5].data()[0]);
 		gps.setSatelites(atoi(items[7].data()));
 		gps.setCalidad(atoi(items[6].data()));
 		gps.setAltitud(atof(items[9].data()));
 		res =  0 ;
 	}
+	log.info("%s: %s",__FILE__, "Terminando funcion!!");
 	return res;
 }
 std::vector<std::string> & GPSEnlace::split(const std::string &s, char delim, std::vector<std::string> &elems) {

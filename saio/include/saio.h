@@ -8,4 +8,6 @@
 #include "IOEnlace.h"
 #include "I2CPuerto.h"
 #include "Campa.h"
+#include "CATOSEnlace.h"
+
 #endif

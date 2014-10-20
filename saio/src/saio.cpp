@@ -14,31 +14,38 @@ using namespace std;
 using namespace container;
 int main() {
 	log4cpp::Category &log  = log4cpp::Category::getRoot();
-	log4cpp::PropertyConfigurator::configure( Env::getInstance("/home/borja/Prj/Container/saio.cnf")->GetValue("logproperties") );
-	log.info("dd");
+	log4cpp::PropertyConfigurator::configure( Env::getInstance("/home/pi/prj/container/saio.cnf")->GetValue("logproperties") );
+	log.info("%s: %s",__FILE__, "Iniciando aplicacion de gruas...");
 
-	Campa campa ;
-	campa.CargarCalles("/home/batela/cnf/YARD2.ASC");
 	PosicionGrua pg;
-	//campa.CalcularPosicion(-217.61,445.79, pg); campa.CalcularPosicion(571.13 ,-17.15, pg);
-	campa.CalcularPosicion(750 ,-132, pg);
+	Campa campa ;
+	campa.CargarCalles("/home/pi/prj/container/YARD2.ASC");
 
 	GPSEnlace *gps = new GPSEnlace ();
 	RS232Puerto *gpsPort = new RS232Puerto("/dev/ttyUSB0", 9600);
-	Explorador *exGps 		= new Explorador (gps,gpsPort,false);
-	exGps->LanzarExplorador();
+	Explorador *exGps 		= new Explorador (gps,gpsPort,true);
+
 
 	IOEnlace *brj = new IOEnlace();
 	I2CPuerto *i2cPort = new I2CPuerto();
 	Explorador *exAnalog = new Explorador (brj,i2cPort,false);
-	exAnalog->LanzarExplorador();
+
+	CATOSEnlace *cts 			= new CATOSEnlace();
+	RS232Puerto *ctsPort 	= new RS232Puerto("/dev/ttyUSB1", 9600);
+	Explorador *exCatos 	= new Explorador (cts,ctsPort,false);
 
 	while (true){
-		/*switch (estado){
+		if (gps->getGPS()->getCalidad() > 0){
+			float gLat = gps->getGPS()->getLatitud();
+			float gLon = gps->getGPS()->getLongitud();
+			if (gps->getGPS()->getCLongitud()=='W') gLon = -1 * gLon;
+			campa.CalcularPosicion(gLat,gLon,pg);
+			//cts->crearTrama(1,pg,cts->txbuffer);
+			//exCatos->Enviar(strlen(cts->txbuffer),cts->txbuffer);
+		}
+		log.info("%s: %s",__FILE__, "Esperando lectura correcta..");
+		sleep (1);
 
-		}*/
-		sleep (100);
 	}
-	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 	return 0;
 }

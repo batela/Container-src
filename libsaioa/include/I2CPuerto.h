@@ -16,6 +16,7 @@ class I2CPuerto: public container::Puerto {
 public:
 	I2CPuerto();
 	virtual ~I2CPuerto();
+	void cerrar();
 };
 
 } /* namespace container */

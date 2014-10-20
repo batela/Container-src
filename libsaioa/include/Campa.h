@@ -30,8 +30,9 @@ public:
 	Campa();
 	virtual ~Campa();
 	int CargarCalles (string a);
-	Calle * GetCalle (int i ) {return calles[i];};
+	Calle * GetCalle (int i ) {return callesReales[i];}
 	void CalcularPosicion (float lat, float lon, PosicionGrua &pg) ;
+	int BuscaCalleReferencia (vector <Calle *> calles, double X,double Y,double &linePX,double &linePY);
 
 private:
 	int 		elipsoide;
@@ -42,7 +43,12 @@ private:
 
 
 	void Inicializa ();
-	vector <Calle *>	calles;
+	vector <Calle *>	callesReales;
+	vector <Calle *>	callesVirtuales;
+	int CargarCallesReales 		(string a);
+	int CargarCallesVirtuales ();
+	int CalculaCoordenadasVirtuales (Calle * cc,Calle *cv);
+
 	int CrearCalle (vector<string> items);
 	vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 	vector<std::string> split(const std::string &s, char delim);

@@ -58,12 +58,14 @@ extern log4cpp::Category &log;
 		if ( ! serial_port.good() ){
 			return(-1) ;
 		}
+		this->setIsOpen(true);
 		log.info("%s: %s",__FILE__, "Puerto abierto!!");
 		return 0 ;
 	}
 
 	void RS232Puerto::cerrar(){
 		serial_port.Close();
+		this->setIsOpen(false);
 	}
 
 	int RS232Puerto::reabrir(){
@@ -75,13 +77,14 @@ extern log4cpp::Category &log;
 	 */
 	int RS232Puerto::leer (char buffer[]){
 		int count = 0 ;
-		while( serial_port.rdbuf()->in_avail() > 0  ){
+		int res = 0;
+		while( (res = serial_port.rdbuf()->in_avail()) > 0  ){
 			char next_byte;
 			serial_port.get(next_byte);
 			if (count < 255) buffer[count++] = next_byte;
 		}
-		if (count >= 255) count = -1;
-		else buffer[count]= 0 ;
+		if (count >= 255 || res < 0 ) count = -1;
+		buffer[count]= 0 ;
 		return count;
 	}
 

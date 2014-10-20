@@ -44,7 +44,7 @@ int CATOSEnlace::analizaTrama(char buffer[]){
 	'$r' CR
  *
  */
-int CATOSEnlace::crearTrama(char buffer[]){
+int CATOSEnlace::crearTrama(int accion, PosicionGrua pg, char buffer[]){
 	log.error("%s: %s",__FILE__, "FuncCATOSion sin implementar..");
 	return -1;
 }

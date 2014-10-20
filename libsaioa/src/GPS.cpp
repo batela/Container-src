@@ -10,12 +10,18 @@
 namespace container {
 
 GPS::GPS() {
-	// TODO Auto-generated constructor stub
+	fecha 		= 0;
+	latitud 	= 0;
+	longitud	= 0;
+	altitud		= 0;
+	clatitud	= 0;
+	clongitud = 0;
+	satelites	= 0;
+	calidad 	= 0;
 
 }
 
 GPS::~GPS() {
-	// TODO Auto-generated destructor stub
 }
 
 } /* namespace container */

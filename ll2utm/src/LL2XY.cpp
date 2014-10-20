@@ -103,8 +103,20 @@ double LL2XY::findDistanceToSegment(double x1, double y1, double x2, double y2, 
     //returning shortest distance
     return sqrt(diffX * diffX + diffY * diffY);
 }
+/**
+ * Distancia entre dos puntos
+ */
+double LL2XY::findDistanceP2P(double x1, double y1, double x2, double y2)
+{
+    double diffX = x2 - x1;
+    float diffY = y2 - y1;
+    //returning shortest distance
+    return sqrt(diffX * diffX + diffY * diffY);
+}
 
-
+/*
+ *
+ */
 void LL2XY::getDistance (string lat, string lon, float &d){
 	float a = 0;
 	float c = 0;

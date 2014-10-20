@@ -22,10 +22,10 @@ public:
 	float getEasting() const { return easting; 	}
 	float getXrelativo() const {return Xrelativo;	}
 	float getYrelativo() const {return Yrelativo;	}
-	const string& getBloque() const {		return bloque;}
-	const int getCalle() const { return calle;	}
+	const char getBloque() const {		return bloque;}
+	const char getCalle() const { return calle;	}
 	float getYNOATUM (){ return Xrelativo ;} ;
-	float getXNOATUM (){ return Yrelativo ;} ;
+	float getXNOATUM (){ return (-1)*Yrelativo ;} ;
 	float getXsobreCalle() const {		return XsobreCalle;	}
 	float getYsobreCalle() const {		return YsobreCalle;	}
 
@@ -37,8 +37,8 @@ public:
 	void setNorting(float norting) { this->norting = norting;	}
 	void setXrelativo(float xrelativo) {Xrelativo = xrelativo;}
 	void setYrelativo(float yrelativo) {	Yrelativo = yrelativo;	}
-	void setBloque(const string& bloque) {this->bloque = bloque;	}
-	void setCalle(int calle) { this->calle = calle;	}
+	void setBloque(char bloque) {this->bloque = bloque;	}
+	void setCalle(char calle) { this->calle = calle;	}
 	void setXsobreCalle(float xsobreCalle) {		XsobreCalle = xsobreCalle;	}
 	void setYsobreCalle(float ysobreCalle) {		YsobreCalle = ysobreCalle;	}
 
@@ -54,8 +54,8 @@ private:
 	float YsobreCalle;
 	float XsobreCalle;
 
-	int calle;
-	string bloque;
+	char calle;
+	char bloque;
 };
 }
 #endif /* POSICIONGRUA_H_ */

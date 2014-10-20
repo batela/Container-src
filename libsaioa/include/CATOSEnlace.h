@@ -15,17 +15,17 @@
 #include "Enlace.h"
 #include "Env.h"
 #include "GPS.h"
+#include "PosicionGrua.h"
 using namespace std;
 namespace container {
 
 class CATOSEnlace: public container::Enlace {
 public:
-	static const int LONGITUD_GPGGA = 15;
 
 	CATOSEnlace();
 	virtual ~CATOSEnlace();
 	int analizaTrama (char buffer []);
-	int crearTrama (char buffer []);
+	int crearTrama(int accion, PosicionGrua pg, char buffer[]);
 private:
 	std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) ;
 	std::vector<std::string> split(const std::string &s, char delim);

@@ -15,12 +15,13 @@
 #include "Enlace.h"
 #include "Env.h"
 #include "GPS.h"
+#include "llstr.h"
 using namespace std;
 namespace container {
 
 class GPSEnlace: public container::Enlace {
 public:
-	static const int LONGITUD_GPGGA = 15;
+	static const int LONGITUD_GPGGA = 14;
 
 	GPSEnlace();
 	virtual ~GPSEnlace();

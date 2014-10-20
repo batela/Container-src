@@ -18,8 +18,9 @@ void* lector (void * explorador){
 	char buffer[256];
 	int res = 0 ;
 	while (exp->sigue){
+		res = 0;
 		if (exp->getPuerto()->getIsOpen()== false) {
-			exp->getPuerto()->abrir();
+			res = exp->getPuerto()->abrir();
 		}
 		else {
 			exp->getEnlace()->rxbuffer[0]= 0;
@@ -49,6 +50,7 @@ Explorador::Explorador(Enlace* e, Puerto* p, bool lanzar){
 	enlace = e;
 	puerto = p;
 	sigue = lanzar;
+	if (sigue) LanzarExplorador();
 }
 Explorador::~Explorador() {
 	// TODO Auto-generated destructor stub
@@ -58,8 +60,6 @@ Explorador::~Explorador() {
 void Explorador::LanzarExplorador (){
 	log.info("%s: %s", __FILE__, "Abriendo puerto");
 	if (puerto->abrir() != 0) log.error("%s: %s", __FILE__, "Error abriendo puerto!!");
-	//int res = puerto->abrir() ;
-	sigue = true;
 	int iret1 = pthread_create( &idThLector, NULL, lector, this);
 
 }

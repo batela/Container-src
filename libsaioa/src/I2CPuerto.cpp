@@ -16,4 +16,8 @@ I2CPuerto::~I2CPuerto() {
 	// TODO Auto-generated destructor stub
 }
 
+void I2CPuerto::cerrar(){
+
+}
+
 } /* namespace container */

@@ -6,6 +6,8 @@
  */
 
 #include "../include/Calle.h"
+namespace container {
+extern log4cpp::Category &log;
 
 Calle::Calle() {
 	// TODO Auto-generated constructor stub
@@ -27,4 +29,5 @@ int Calle::CrearRecta() {
 		res = 1;
 	}
 	return res  ;
+}
 }
