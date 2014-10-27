@@ -28,7 +28,9 @@ public:
 	void close ();
 	int publicar (char message);
 	int escuchar (char message);
+	friend void *lector( void *ptr );
 private:
+	bool sigue;
 	string hostname;
 	int port, status; //port = 5672
 	int rate_limit;
@@ -36,6 +38,8 @@ private:
 	amqp_connection_state_t conn 	= NULL;
 	amqp_socket_t *socket 				= NULL;
 	RabbitErrorHandler errorHandler;
+	pthread_t idThLector;
+	char rxBuffer[256];
 
 
 };
