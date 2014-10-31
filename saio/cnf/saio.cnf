@@ -10,3 +10,5 @@ latbase=43.342376
 lonbase=-3.041815
 elipsoide=23
 umbralcalle=10
+canalgps=batela.grua.gps
+topicgps=batela.grua.gps.posicion

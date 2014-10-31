@@ -6,15 +6,20 @@
  */
 
 #include "../include/RabbitConnection.h"
-
+using namespace container;
 namespace Container {
+extern log4cpp::Category &log;
 
 void* lector (void * p){
+	log.info("%s: %s",__FILE__, "Iniciando thread lector...");
 	RabbitConnection * exp = (RabbitConnection*)p;
+
+
 	while (true){
 		amqp_envelope_t envelope;
 		amqp_frame_t frame;
 		amqp_maybe_release_buffers(exp->conn);
+		log.info("%s: %s",__FILE__, "Esperando mensaje....");
 		amqp_rpc_reply_t ret = amqp_consume_message(exp->conn, &envelope, NULL, 0);
 		if (AMQP_RESPONSE_NORMAL != ret.reply_type) {
 		      if (AMQP_RESPONSE_LIBRARY_EXCEPTION == ret.reply_type &&   AMQP_STATUS_UNEXPECTED_STATE == ret.library_error) {
@@ -36,9 +41,13 @@ void* lector (void * p){
 		              {
 		                amqp_message_t message;
 		                ret = amqp_read_message(exp->conn, frame.channel, &message, 0);
-		                if (AMQP_RESPONSE_NORMAL != ret.reply_type) {
-		                }
 
+		                if (AMQP_RESPONSE_NORMAL != ret.reply_type) {
+		                	log.error("%s: %s",__FILE__, "Error leyendo mensaje de la cola");
+		                }
+		                else{
+		                	memcpy (exp->rxBuffer,message.body.bytes,message.body.len);
+		                }
 		                amqp_destroy_message(&message);
 		              }
 
@@ -58,12 +67,13 @@ void* lector (void * p){
 		              /* a connection.close method happens when a connection exception occurs,
 		               * this can happen by trying to use a channel that isn't open for example.
 		               *
-		               * In this case the whole connection must be restarted.
+		               * In thi
+nclude <stdio.h>s case the whole connection must be restarted.
 		               */
 		            	 break;
 
 		            default:
-		              fprintf(stderr ,"An unexpected method was received %d\n", frame.payload.method.id);
+		            	log.error("%s: %s",__FILE__, "Error en metodo de la cola");
 		              break;
 		          }
 		        }
@@ -73,7 +83,7 @@ void* lector (void * p){
 		      amqp_destroy_envelope(&envelope);
 		    }
 	}
-	printf ("Salimos");
+	log.info("%s: %s",__FILE__, "Terminando thread lector.");
 }
 
 RabbitConnection::RabbitConnection(string host) {
@@ -97,6 +107,7 @@ RabbitConnection::~RabbitConnection() {
  * @return 0 if OK
  */
 int RabbitConnection::initialize (){
+	log.info("%s: %s",__FILE__, "Comenzado funcion initialize..");
 	int status = amqp_socket_open(socket, hostname.data(), port);
 	if (status) {
 		return status;
@@ -106,6 +117,7 @@ int RabbitConnection::initialize (){
 	amqp_channel_open(conn, 1);
 	status = errorHandler.handleError( amqp_get_rpc_reply(conn),"rpc_reply function");
 	if (status) close();
+	log.info("%s: %s",__FILE__, "Finalizando funcion initialize..");
 	return status ;
 
 }
@@ -117,23 +129,27 @@ void RabbitConnection::close (){
 /**
  * @return 0 if OK
  */
-int RabbitConnection::publicar (char message){
+int RabbitConnection::publicar (char* message){
+	log.info("%s: %s",__FILE__, "Comenzado funcion publicar...");
 	int res = 1;
 	amqp_bytes_t message_bytes;
-	message_bytes.len = sizeof(message);
-	message_bytes.bytes = message;
+	message_bytes.len = strlen(message);
+	message_bytes.bytes = (void*)message;
 	if (AMQP_STATUS_OK==amqp_basic_publish(conn,1, amqp_cstring_bytes("a2pbeer.topic"),
 	                                      amqp_cstring_bytes("HOLA.MUNDO"),
 	                                      0,
 	                                      0,
 	                                      NULL,
 	                                      message_bytes)) res = 0 ;
-
+	log.debug ("%s: %s %d",__FILE__, "0=OK, Publicar termina con codigo: ", res);
+	log.info("%s: %s",__FILE__, "Finalizando funcion publicar...");
+	return res;
 }
 /**
  * @return 0 if OK
  */
-int RabbitConnection::escuchar (char message){
+int RabbitConnection::escuchar (){
+	log.info("%s: %s",__FILE__, "Comenzado funcion escuchar...");
 	amqp_bytes_t  queuename ;
 	amqp_queue_declare_ok_t *r = amqp_queue_declare(conn, 1, amqp_empty_bytes, 0, 0, 0, 1,amqp_empty_table);
 	errorHandler.handleError(amqp_get_rpc_reply(conn), "Declaring queue");
@@ -143,13 +159,12 @@ int RabbitConnection::escuchar (char message){
 	  return 1;
 	}
 
-	amqp_queue_bind(conn, 1, queuename, amqp_cstring_bytes("a2pbeer.topic"), amqp_cstring_bytes("HOLA.MUNDO.SOY"),
+	amqp_queue_bind(conn, 1, queuename, amqp_cstring_bytes(Env::getInstance()->GetValue("canalgps").data()), amqp_cstring_bytes(Env::getInstance()->GetValue("topicgps").data()),
 	                    amqp_empty_table);
 	errorHandler.handleError(amqp_get_rpc_reply(conn), "Binding queue");
 	amqp_basic_consume(conn, 1, queuename, amqp_empty_bytes, 0, 1, 0, amqp_empty_table);
 
+	log.info("%s: %s",__FILE__, "Lanzando thread lector...");
 	return (pthread_create( &idThLector, NULL, lector, this)) ;
-
 }
-
 } /* namespace Container */

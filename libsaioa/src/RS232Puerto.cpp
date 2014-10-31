@@ -85,6 +85,7 @@ extern log4cpp::Category &log;
 		}
 		if (count >= 255 || res < 0 ) count = -1;
 		buffer[count]= 0 ;
+
 		return count;
 	}
 

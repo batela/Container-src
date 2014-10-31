@@ -7,6 +7,7 @@
 
 
 #include "../include/Campa.h"
+#include <cmath>
 
 namespace container {
 extern log4cpp::Category &log;
@@ -87,14 +88,34 @@ int Campa::CargarCallesVirtuales(){
  */
 int Campa::CalculaCoordenadasVirtuales (Calle * cc,Calle *cv){
 	log.info("%s: %s",__FILE__, "Comienza calculo de coordenadas de calles virtuales..");
+	float PI=3.14159265;
 	int res = 0 ;
+
 	float cosval = 1 / (sqrt ( (cc->getPendiente()*cc->getPendiente() + 1)/(cc->getPendiente()*cc->getPendiente()) ));
 	float alpha = acos (cosval);
-	cv->setYi(cc->getYi() + 14 * sin (alpha));
-	cv->setXi(cc->getXi() + 14 * cos (alpha));
-	cv->setYf(cc->getYf() + 14 * sin (alpha));
-	cv->setXf(cc->getXf() + 14 * cos (alpha));
+	//float angulo = alpha * 180 / PI;
+
+  int factor = 0;
+  float segmento = 16;
+  (cc->getPendiente()>0)?factor = -1 : factor = 1;
+	cv->setYi(cc->getYi() - factor * segmento * sin (alpha));
+	cv->setXi(cc->getXi() -  segmento * cos (alpha));
+	cv->setYf(cc->getYf() - factor * segmento * sin (alpha));
+	cv->setXf(cc->getXf() -  segmento * cos (alpha));
 	log.debug("%s: %s %f : %f : %f : %f",__FILE__,"Coordenada calculadas: Yi Xi Yf Xf",cv->getYi(),cv->getXi(),cv->getYf(),cv->getXf() );
+
+	/*
+	float mvirtual = (-1 /cc->getPendiente());
+	float cosval2 = 1 / (sqrt ( (mvirtual*mvirtual + 1)/(mvirtual*mvirtual) ));
+	float alpha2 = acos (cosval2);
+	float angulo2 = alpha2 * 180 / PI;
+	float jjj = std::abs (sin (alpha));
+	cv->setYi(cc->getYi() - factor * segmento * sin (alpha2));
+	cv->setXi(cc->getXi() - segmento * cos (alpha2));
+	cv->setYf(cc->getYf() - factor * segmento * sin (alpha2));
+	cv->setXf(cc->getXf() - segmento * cos (alpha2));
+	log.debug("%s: %s %f : %f : %f : %f",__FILE__,"Coordenada calculadas: Yi Xi Yf Xf",cv->getYi(),cv->getXi(),cv->getYf(),cv->getXf() );
+ */
 	log.info("%s: %s",__FILE__, "Finaliza calculo de coordenas virtuales");
 	return res ;
 }
@@ -174,27 +195,28 @@ void Campa::CalcularPosicion(float lat, float lon, PosicionGrua &pg) {
   double linePX= 0;
   double linePYVirtual= 0;
   double linePXVirtual= 0;
-  int indiceReales		= BuscaCalleReferencia (callesReales, X,Y,linePX,linePY);
-  int indiceVirtuales	= BuscaCalleReferencia (callesVirtuales, X,Y,linePXVirtual,linePYVirtual);
+  double distanciaReal = -1;
+  double distanciaVirtual = -1;
   int indice= -1 ;
-  log.debug("%s: %s: %d - %d",__FILE__, "Indices en calles Reales-Virtuales:" , indiceReales, indiceVirtuales);
-  if (indiceReales == indiceVirtuales){
+
+  int indiceReales		= BuscaCalleReferencia (callesReales, X,Y,linePX,linePY,distanciaReal);
+  int indiceVirtuales	= BuscaCalleReferencia (callesVirtuales, X,Y,linePXVirtual,linePYVirtual,distanciaVirtual);
+  log.debug("%s: %s: %d : %f",__FILE__, "Indices en calles Reales : Distancia:" , indiceReales, distanciaReal);
+  log.debug("%s: %s: %d : %f",__FILE__, "Indices en calles Virtuales :Distancia:" , indiceVirtuales, distanciaVirtual);
+  if ((distanciaReal < distanciaVirtual) && (indiceReales != -1)){
   	indice = indiceReales;
   	pg.setYsobreCalle(linePY);
   	pg.setXsobreCalle(linePX);
   }
-  else if (indiceReales > indiceVirtuales){
+  else if ((distanciaReal > distanciaVirtual) && (indiceVirtuales != -1)){
   	indice = indiceVirtuales;
   	pg.setYsobreCalle(linePYVirtual);
   	pg.setXsobreCalle(linePXVirtual);
   }
-  else if (indiceReales < indiceVirtuales){
-  	log.debug("%s: %s:",__FILE__, "Indice real inferior al virtual");
-  }
   log.debug("%s: %s: %d",__FILE__, "Indice asignado: ", indice);
   if (indice >= 0){
-  	pg.setCalle	(callesReales[indice]->getCalle());
-  	pg.setBloque(callesReales[indice]->getZona());
+  	pg.setCalle	(callesReales[indice-1]->getCalle());
+  	pg.setBloque(callesReales[indice-1]->getZona());
   }
 
 
@@ -206,20 +228,20 @@ void Campa::CalcularPosicion(float lat, float lon, PosicionGrua &pg) {
 /**
  *
  */
-int Campa::BuscaCalleReferencia (vector <Calle *> calles, double X,double Y,double &linePX,double &linePY)
+int Campa::BuscaCalleReferencia (vector <Calle *> calles, double X,double Y,double &linePX,double &linePY,double &distancia)
 {
 	LL2XY ll2xy;
-	int indice = -1 ;
+	int indice = 0 ;
 	int res = -1 ;
-  float refDistancia = 999999999999;
+  distancia = 99999999;
 	for(std::vector<Calle*>::iterator it = calles.begin(); it != calles.end(); ++it) {
 		Calle *cc = *it;
 	  //float distancia = ll2xy.findDistanceToSegment(cc->getYi(),cc->getXi(),cc->getYf(),cc->getXf(),Y,X);
-	  float distancia = ll2xy.findDistanceToSegment(cc->getXi(),cc->getYi(),cc->getXf(),cc->getYf(),X,Y,linePX,linePY);
-	  log.debug("%s: %s %d %s %f",__FILE__, "Analizada calle: ",++indice," distancia: ",distancia);
-	  if (distancia < refDistancia && distancia <= umbralCalle){
-	  	refDistancia = distancia;
-	    res = indice;
+	  float aux = ll2xy.findDistanceToSegment(cc->getXi(),cc->getYi(),cc->getXf(),cc->getYf(),X,Y,linePX,linePY);
+	  log.debug("%s: %s %d %s %f",__FILE__, "Analizada calle: ",++indice," distancia: ",aux);
+	  if (aux < distancia){
+	  	distancia = aux;
+	  	if (aux <= umbralCalle) res = indice;
 	  }
 	}
 	return res ;

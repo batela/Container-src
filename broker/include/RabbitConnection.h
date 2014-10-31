@@ -11,11 +11,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
-
+#include <string.h>
 #include <librabbitmq/amqp_tcp_socket.h>
 #include <librabbitmq/amqp.h>
 #include <librabbitmq/amqp_framing.h>
 #include "../include/RabbitErrorHandler.h"
+
+#include "Env.h"
 using namespace std;
 namespace Container {
 
@@ -26,8 +28,8 @@ public:
 	virtual ~RabbitConnection();
 	int initialize ();
 	void close ();
-	int publicar (char message);
-	int escuchar (char message);
+	int publicar (char* message);
+	int escuchar ();
 	friend void *lector( void *ptr );
 private:
 	bool sigue;
