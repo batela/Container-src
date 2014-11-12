@@ -7,7 +7,7 @@
 
 #include "../include/RabbitErrorHandler.h"
 
-namespace Container {
+namespace container {
 
 RabbitErrorHandler::RabbitErrorHandler() {
 

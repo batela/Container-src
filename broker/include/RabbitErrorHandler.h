@@ -14,7 +14,7 @@
 #include <librabbitmq/amqp_framing.h>
 
 using namespace std;
-namespace Container {
+namespace container {
 
 class RabbitErrorHandler {
 public:

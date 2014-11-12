@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string>
 #include <string.h>
+#include <time.h>
 #include <librabbitmq/amqp_tcp_socket.h>
 #include <librabbitmq/amqp.h>
 #include <librabbitmq/amqp_framing.h>
@@ -19,31 +20,39 @@
 
 #include "Env.h"
 using namespace std;
-namespace Container {
+namespace container {
 
 class RabbitConnection {
 public:
-	RabbitConnection(string host);
-	RabbitConnection();
+	RabbitConnection(string host,string c, string t);
+	RabbitConnection(string c, string t);
 	virtual ~RabbitConnection();
 	int initialize ();
 	void close ();
 	int publicar (char* message);
+	int leer (char* message, int to);
 	int escuchar ();
-	friend void *lector( void *ptr );
+	friend void *lectorcolasww( void *ptr );
+	void setTime (uint64_t a) ;
+	uint64_t getUltimaAct (){return ultimaAct ;}
+
+	amqp_connection_state_t conn 	= NULL;
+	char rxBuffer[256];
 private:
 	bool sigue;
+	int port; //port = 5672
+	int status;
 	string hostname;
-	int port, status; //port = 5672
-	int rate_limit;
-	int message_count;
-	amqp_connection_state_t conn 	= NULL;
-	amqp_socket_t *socket 				= NULL;
-	RabbitErrorHandler errorHandler;
-	pthread_t idThLector;
-	char rxBuffer[256];
+	string canal;
+	string topic;
 
+	amqp_socket_t 			*socket 				= NULL;
+	RabbitErrorHandler 	errorHandler;
+	pthread_t 					idThLector;
 
+	uint64_t 						ultimaAct;
+
+	int preparaEscuchar ();
 };
 
 } /* namespace Container */
