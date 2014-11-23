@@ -108,9 +108,8 @@ double LL2XY::findDistanceToSegment(double x1, double y1, double x2, double y2, 
  */
 double LL2XY::findDistanceP2P(double x1, double y1, double x2, double y2)
 {
-    double diffX = x2 - x1;
-    float diffY = y2 - y1;
-    //returning shortest distance
+    double 	diffX = x2 - x1;
+    float 	diffY = y2 - y1;
     return sqrt(diffX * diffX + diffY * diffY);
 }
 

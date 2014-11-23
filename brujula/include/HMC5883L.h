@@ -29,6 +29,8 @@ THE SOFTWARE.
 */
 #ifndef _HMC5883L_H_
 #define _HMC5883L_H_
+#include <unistd.h>
+#include <math.h>
 //#include "I2Cdev.h"
 #include "wiringPi.h"
 #include "wiringPiI2C.h"
@@ -88,6 +90,7 @@ THE SOFTWARE.
 #define HMC5883L_STATUS_LOCK_BIT 1
 #define HMC5883L_STATUS_READY_BIT 0
 
+#define PI 3.14159265
 class HMC5883L {
 public:
 HMC5883L();
@@ -119,6 +122,7 @@ bool getReadyStatus();
 uint8_t getIDA();
 uint8_t getIDB();
 uint8_t getIDC();
+float getBearing ();
 private:
 uint8_t devAddr;
 uint8_t buffer[6];

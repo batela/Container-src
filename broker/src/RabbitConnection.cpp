@@ -88,6 +88,7 @@ int RabbitConnection::publicar (char* message){
 	                                      0,
 	                                      NULL,
 	                                      message_bytes)) res = 0 ;
+	usleep(500);//Timer para pausar la publicación y dar tiempo
 	log.debug ("%s: %s %d",__FILE__, "0=OK, Publicar termina con codigo: ", res);
 	log.info("%s: %s",__FILE__, "Finalizando funcion publicar...");
 	return res;

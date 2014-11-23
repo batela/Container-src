@@ -79,6 +79,14 @@ wiringPiI2CWriteReg8(devAddr,0x01,0x70);
 wiringPiI2CWriteReg8(devAddr,0x02,HMC5883L_MODE_SINGLE);
 */
 }
+
+float HMC5883L::getBearing() {
+	int valorX = getHeadingX() * 0.92;
+	int valorY = getHeadingY() * 0.92;
+	float bearing = atan2(valorY, valorX);
+	if (bearing < 0) bearing += 2 * PI;
+	return ((bearing*180)/(PI));
+}
 /** Verify the I2C connection.
 * Make sure the device is connected and responds as expected.
 * @return True if connection is valid, false otherwise

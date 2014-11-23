@@ -9,26 +9,23 @@
 #define IOENLACE_H_
 #include <inttypes.h>
 #include <unistd.h>
+#include <cerrno>
 #include "Env.h"
 #include "modbus.h"
 #include "modbus-ct.h"
-
+#include "PosicionBrazo.h"
 #include "Enlace.h"
 
 namespace container {
 
 class IOEnlace: public container::Enlace {
 public:
-	IOEnlace(string port, int bauds);
-	IOEnlace(string port);
+	IOEnlace();
 	virtual ~IOEnlace();
-	int conectar();
-	int cerrar();
-	int leerBytes (int a , unsigned short int data[]);
+	int analizaTrama ( unsigned short trama[]);
+	PosicionBrazo* getBrazo () {return &pb;} ;
 private:
-	modbus_t *ctx;
-	string port;
-	int bauds;
+	PosicionBrazo pb;
 };
 
 } /* namespace container */

@@ -160,14 +160,12 @@ void Campa::CalcularPosicion(float lat, float lon, PosicionGrua &pg) {
 
 	log.info("%s: %s %f %f",__FILE__, "Inicia CalcularPosicion con latitud y longitud: ", lat,lon);
 
-
 	double UTMNorthing;
 	double UTMEasting;
 	char UTMZone[4];
-	double Y; //posiciones relativas a la referencia
-	double X; //posiciones relativa a la referenciaLL2XY::
+	double Y; 	//posiciones relativas a la referencia
+	double X; 	//posiciones relativa a la referenciaLL2XY::
 	LL2XY ll2xy;
-
 
 	// 1.-Pasar lat y lon a UTM.
 	log.info("%s: %s %f %f",__FILE__, "Calculando Posicion para: ",lat ,lon);
@@ -177,6 +175,7 @@ void Campa::CalcularPosicion(float lat, float lon, PosicionGrua &pg) {
   Y = UTMNorthingBase - UTMNorthing ;
   X = UTMEastingBase - UTMEasting;
 
+  //Inicializamos los parametros de PosicionGrua
   pg.setGlat(lat);
   pg.setGlon(lon);
   pg.setEasting(UTMEasting);
@@ -185,18 +184,18 @@ void Campa::CalcularPosicion(float lat, float lon, PosicionGrua &pg) {
   pg.setXrelativo(X);
   pg.setCalle	('-');
   pg.setBloque('-');
-  /* SOLO PARA PRUEBAS*/ ///FIXME ooojojjoojoj!!
-  /*
+
+  /* SOLO PARA PRUEBAS
   Y=lat;
   X=lon;
-*/
+  */
   // 3.-Con el norting/easting relativos calcular la distanci a las rectas
-  double linePY= 0;
-  double linePX= 0;
-  double linePYVirtual= 0;
-  double linePXVirtual= 0;
-  double distanciaReal = -1;
-  double distanciaVirtual = -1;
+  double linePY= 0; 						// Proyeccion de la coordenada Y sobre la calle
+  double linePX= 0; 						// Proyeccion de la coordenada X sobre la calle
+  double linePYVirtual= 0; 			// Proyección de la coodernada Y sobre la calle virtual
+  double linePXVirtual= 0; 			// Proyección de la coordenada X sobre la calle virtual
+  double distanciaReal = -1;		// Distancia a la calle real
+  double distanciaVirtual = -1; // Distancia a la calle virtual
   int indice= -1 ;
 
   int indiceReales		= BuscaCalleReferencia (callesReales, X,Y,linePX,linePY,distanciaReal);
@@ -219,7 +218,6 @@ void Campa::CalcularPosicion(float lat, float lon, PosicionGrua &pg) {
   	pg.setBloque(callesReales[indice-1]->getZona());
   }
 
-
   // 4.-Una vez que tenemos la recta situarnos en el origen y ver cuantos contendore hay
 
   log.debug("%s: %s: %f : %f %c %c",__FILE__, "Posicionado de grua:" , pg.getXNOATUM(),pg.getYNOATUM(),pg.getCalle(),pg.getBloque());
@@ -236,7 +234,6 @@ int Campa::BuscaCalleReferencia (vector <Calle *> calles, double X,double Y,doub
   distancia = 99999999;
 	for(std::vector<Calle*>::iterator it = calles.begin(); it != calles.end(); ++it) {
 		Calle *cc = *it;
-	  //float distancia = ll2xy.findDistanceToSegment(cc->getYi(),cc->getXi(),cc->getYf(),cc->getXf(),Y,X);
 	  float aux = ll2xy.findDistanceToSegment(cc->getXi(),cc->getYi(),cc->getXf(),cc->getYf(),X,Y,linePX,linePY);
 	  log.debug("%s: %s %d %s %f",__FILE__, "Analizada calle: ",++indice," distancia: ",aux);
 	  if (aux < distancia){
@@ -246,4 +243,6 @@ int Campa::BuscaCalleReferencia (vector <Calle *> calles, double X,double Y,doub
 	}
 	return res ;
 }
+
+
 }//namespace
