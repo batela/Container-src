@@ -25,9 +25,10 @@ public:
 	virtual ~DB();
 	bool Open ();
 	void Close ();
-	int ReadHistoricData (string &data);
-private:
+
+protected:
 	sqlite3 *db;
+private:
 	string dbPath;
 	bool open;
 };
