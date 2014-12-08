@@ -1,14 +1,35 @@
-## A2PBEER configuration file - This is a comment
+## Containerr configuration file - This is a comment
 ## Autor: Borja Tellado
-## Company: Tecnalia
+## Company: Batela Software
 
 
-tcpport=2319
-eventqueue=MY.FIRST.QUEUE
+#tcpport=2319
+#eventqueue=MY.FIRST.QUEUE
+
 logproperties=/home/borja/Prj/Container/log4cpp.properties
+## Configuracion posicion estacion base
 latbase=43.342376
 lonbase=-3.041815
 elipsoide=23
+
+## Umbral para localizaion de calle
 umbralcalle=10
-canalgps=batela.grua.gps
-topicgps=batela.grua.gps.posicion
+
+## Canales de comunicacion con IHM
+canalgps=batela.grua.ex
+topicgps= 
+
+## Puerto GPS
+puertocatos=/dev/ttyUSB0
+baudcatos=9600
+
+## Puerto Catos
+puertocatos=/dev/ttyUSB1
+baudcatos=9600
+
+## Puerto Moxa
+puertocatos=/dev/ttyUSB2
+baudcatos=9600
+
+## Fichero de calles
+path_calles=/home/batela/cnf/YARD2.ASC

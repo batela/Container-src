@@ -42,6 +42,8 @@ public:
 	void setXsobreCalle(float xsobreCalle) {		XsobreCalle = xsobreCalle;	}
 	void setYsobreCalle(float ysobreCalle) {		YsobreCalle = ysobreCalle;	}
 
+	void setContainer (int a) { container = a; }
+	int  getContainer () {return container; }
 private:
 	string lat;
 	string lon;
@@ -56,6 +58,7 @@ private:
 
 	char calle;
 	char bloque;
+	int  container; //Indica el numero de container de calle que se coje.
 };
 }
 #endif /* POSICIONGRUA_H_ */
