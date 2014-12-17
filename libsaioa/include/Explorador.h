@@ -29,6 +29,8 @@ public:
 	friend void *lector( void *ptr );
 	int Enviar (int longitud, Orden orden );
 	int Enviar (int longitud, char* buffer );
+	bool Abrir();
+	bool Cerrar();
 	bool sigue ;
 	Puerto * getPuerto (){return puerto;}
 	Enlace * getEnlace (){return enlace;}

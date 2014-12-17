@@ -33,13 +33,24 @@ service_resource::~service_resource()
 void service_resource::render_GET(const http_request &req, http_response** res)
 {
 	std::cout << "service_resource::render_GET()" << std::endl;
+	map <string , string,arg_comparator> queryitems;
 
   if (verbose) std::cout << req;
   string response;
-  std::cout << "query is:" << req.get_arg("op") <<"\n";
-  this->getDDData(response);
-	*res = new http_response(http_response_builder(response, 200).string_response());
-    if (verbose) std::cout << **res;    
+  string operation = req.get_arg("op");
+  req.get_args(queryitems);
+
+  //Tratamiento  de la query
+  if (operation.compare("historico")==0)
+  	this->getDBHistoricData(queryitems.find("startdate")->second,queryitems.find("enddate")->second,response);
+  else if (operation.compare("maxdia") == 0)
+  	this->getDBMaxDayData(queryitems.find("today")->second,response);
+  else if(operation.compare("ultimo") == 0)
+  	this->getLastData(response);
+  else std::cout << "Operacion: " << req.get_arg("op") << " no localizada."<<"\n";
+
+  *res = new http_response(http_response_builder(response, 200).string_response());
+   if (verbose) std::cout << **res;
 }
 
 
@@ -120,14 +131,37 @@ void service_resource::render_DELETE(const http_request &req, http_response** re
 
     if (verbose) std::cout << **res;    
 }
-void service_resource::getDDData(string &data)
+
+void service_resource::getDBMaxDayData(string today,string &data)
 {
+	std::cout << "getDBMaxDayData today:" << today << std::endl;
+
+	/*
 	DBPesaje db("/home/batela/db/kemen.db");
 	db.Open();
-	db.ReadHistoricData(data);
+	//db.ReadMaxDayData(today,data);
 	std::cout << data;
 	db.Close();
+*/
 }
+
+void service_resource::getDBHistoricData(string startdate, string enddate,string &data)
+{
+	std::cout << "getDBHistoricData start:" << startdate << " end " << enddate << std::endl;
+	/*
+	DBPesaje db("/home/batela/db/kemen.db");
+	db.Open();
+	//db.ReadHistoricData(startdate,enddate,data);
+	std::cout << data;
+	db.Close();
+	*/
+}
+
+void service_resource::getLastData(string &data)
+{
+
+}
+
 /*
 void usage()
 {

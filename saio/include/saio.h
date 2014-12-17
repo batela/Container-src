@@ -7,6 +7,7 @@
 #include "RS232Puerto.h"
 #include "GPSEnlace.h"
 #include "Explorador.h"
+#include "MODBUSExplorador.h"
 #include "IOEnlace.h"
 #include "MODBUSPuerto.h"
 #include "Campa.h"

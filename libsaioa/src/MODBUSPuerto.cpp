@@ -50,12 +50,18 @@ namespace container {
 	/**
 	 * Devuelve -1 si hay error.
 	 */
-	int MODBUSPuerto::leer (unsigned short  buffer[]){
+	int MODBUSPuerto::leer (int cod, int inicio, int tam,char  buffer[]){
 		log.info("%s: %s",__FILE__, "Inicio funcion leer");
 		int count = 0 ;
-		if ((count =  modbus_read_input_registers(ctx,0x0048,2, buffer)) == -1){
-				//log.error("%s\n", modbus_strerror(errno));
+
+		switch (cod){
+		case 0x01:
+			if ((count =  modbus_read_bits(ctx,0,4, (unsigned char*)buffer)) == -1){
+					log.error("%s\n", modbus_strerror(errno));
+			}
+			break;
 		}
+
 		log.info("%s: %s",__FILE__, "Fin funcion leer modbus!!");
 		return count;
 	}

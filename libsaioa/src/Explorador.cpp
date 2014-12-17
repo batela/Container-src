@@ -15,8 +15,12 @@ void* lector (void * explorador){
 	log.info("%s: %s %s",__FILE__, "Lanzado thread lector...");
 
 	Explorador * exp = (Explorador*)explorador;
-	char buffer[256];
+	//char buffer[256];
 	int res = 0 ;
+	struct timespec tim, tim2;
+	tim.tv_sec = 0;
+	//tim.tv_nsec = 500000000L;
+	tim.tv_nsec = 500000000L;
 	while (exp->sigue){
 		res = 0;
 		if (exp->getPuerto()->getIsOpen()== false) {
@@ -27,7 +31,7 @@ void* lector (void * explorador){
 			res = exp->getPuerto()->leer(exp->getEnlace()->rxbuffer);
 		}
 		if (res >0){
-			log.debug("%s: %s %s",__FILE__, "Trama recibida..", buffer);
+			log.debug("%s: %s %s",__FILE__, "Trama recibida..", exp->getEnlace()->rxbuffer);
 			exp->getEnlace()->analizaTrama(exp->getEnlace()->rxbuffer);
 			exp->getEnlace()->rxbuffer[0]= 0;
 		}
@@ -35,7 +39,8 @@ void* lector (void * explorador){
 			exp->getPuerto()->cerrar();
 		}
 		log.info("%s: %s",__FILE__, "Esperamos trama un segundo..");
-		sleep (1);
+		nanosleep(&tim , &tim2);
+		//sleep (1);
 	}
 	printf ("Salimos");
 }
@@ -72,5 +77,17 @@ int Explorador::Enviar (int longitud,char *buffer ){
 	puerto->escribir(buffer,longitud);
 	if (sigue == false) puerto->cerrar();
 	return 0 ;
+}
+
+bool Explorador::Abrir ( ){
+	int res = -1;
+	if (this->getPuerto()->getIsOpen()== false) {
+				res = this->getPuerto()->abrir();
+	}
+	return (res==0?true:false);
+}
+
+bool Explorador::Cerrar ( ){
+	return (true);
 }
 } /* namespace container */

@@ -26,7 +26,7 @@ GPSEnlace::~GPSEnlace() {
 int GPSEnlace::analizaTrama(char buffer[]){
 	int res = -1;
 	std::vector<std::string> items = split(buffer,',');
-	if (strcmp(items[0].data(),"$GPGGA")== 0)
+	if ((items.size() > 0) && (strcmp(items[0].data(),"$GPGGA"))== 0)
 		res = completaGPS (items , gps);
 
 	return res;

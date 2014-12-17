@@ -11,8 +11,7 @@ void * httpservermanager(void * p)
 	port=9898;
 	std::cout << "Using port " << port << std::endl;
     if (secure) {
-            std::cout << "Key: " << key << " Certificate: " << cert
-                      << std::endl;
+    	std::cout << "Key: " << key << " Certificate: " << cert << std::endl;
     }
 
     //
@@ -47,8 +46,28 @@ void * httpservermanager(void * p)
 
 int main(int argc, char **argv) {
 	pthread_t idThLector;
+	ESTADO estado;
+
+	log4cpp::Category &log  = log4cpp::Category::getRoot();
+	log4cpp::PropertyConfigurator::configure( Env::getInstance("/home/batela/cnf/saio.cnf")->GetValue("logproperties") );
+	log.info("%s: %s",__FILE__, "Iniciando aplicacion de gruas...");
+	/*
 	int iret1 = pthread_create( &idThLector, NULL, httpservermanager, NULL);
+	BSCLEnlace *bscl = new BSCLEnlace ();
+	RS232Puerto *bsclPort = new RS232Puerto(Env::getInstance()->GetValue("puertobascula"), 9600);
+	Explorador 	*exBSCL 		= new Explorador (bscl,bsclPort,true);
+	*/
+	IOEnlace *brazo = new IOEnlace();
+	MODBUSPuerto *moxaPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertomoxa"), 9600);
+	Explorador *exBrazo = new Explorador (brazo,moxaPort,true);
+
 	while (true){
+		switch(estado){
+			case LOCK_ABIERTO:
+				break;
+			case LOCK_CERRADO:
+							break;
+		}
 		sleep (10);
 	}
 	return 0;

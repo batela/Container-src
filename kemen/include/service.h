@@ -30,7 +30,11 @@ public:
 	void render_CONNECT(const http_request &req, http_response** res);
 
 	void render_DELETE(const http_request &req, http_response** res);
-	void getDDData(string &data);
+	//User defined
+	void getDBMaxDayData(string today,string &data);
+	void getDBHistoricData(string startdate, string enddate,string &data);
+	void getLastData(string &data);
+
 private:
 
 

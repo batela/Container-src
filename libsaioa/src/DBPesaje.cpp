@@ -16,7 +16,7 @@ DBPesaje::DBPesaje(string path) : DB(path) {
 DBPesaje::~DBPesaje() {
 }
 
-int DBPesaje::ReadHistoricData (string &data){
+int DBPesaje::ReadHistoricData (string startdate, string enddate,string &data){
 
 	log.info("%s-%s: %s", __FILE__,__FUNCTION__, "Starting function..") ;
 

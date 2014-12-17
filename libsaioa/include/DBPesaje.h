@@ -16,7 +16,8 @@ class DBPesaje: public DB {
 public:
 	DBPesaje(string path);
 	virtual ~DBPesaje();
-	int ReadHistoricData (string &data);
+	int ReadHistoricData (string startdate, string enddate,string &data);
+	int ReadMaxDayData (string today, string &data);
 };
 
 } /* namespace container */

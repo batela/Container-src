@@ -12,7 +12,6 @@ extern log4cpp::Category &log;
 
 
 	RS232Puerto::RS232Puerto(string id,int baudrate) : Puerto(id,RS232){
-		setName(id);
 	}
 
 	RS232Puerto::~RS232Puerto() {
@@ -54,10 +53,13 @@ extern log4cpp::Category &log;
 		//
 		// Turn on hardware flow control.
 		//
+
 		serial_port.SetFlowControl( SerialStreamBuf::FLOW_CONTROL_NONE ) ;
 		if ( ! serial_port.good() ){
 			return(-1) ;
 		}
+		serial_port.SetVMin(0);
+		serial_port.SetVTime(0);
 		this->setIsOpen(true);
 		log.info("%s: %s",__FILE__, "Puerto abierto!!");
 		return 0 ;
@@ -78,14 +80,15 @@ extern log4cpp::Category &log;
 	int RS232Puerto::leer (char buffer[]){
 		int count = 0 ;
 		int res = 0;
+
 		while( (res = serial_port.rdbuf()->in_avail()) > 0  ){
 			char next_byte;
 			serial_port.get(next_byte);
 			if (count < 255) buffer[count++] = next_byte;
+			if (next_byte =='\n') break;
 		}
 		if (count >= 255 || res < 0 ) count = -1;
 		buffer[count]= 0 ;
-
 		return count;
 	}
 

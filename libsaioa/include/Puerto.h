@@ -28,7 +28,7 @@ public:
 	virtual int abrir (){return 0 ;}
 	virtual void cerrar (){};
 	virtual int escribir (char buffer[], int count){return 0;}
-private:
+protected:
 	bool 			isOpen;
 	PORT_TYPE type;
 	string 		name ;

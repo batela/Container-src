@@ -19,7 +19,7 @@ int main() {
 	log4cpp::Category &log  = log4cpp::Category::getRoot();
 	log4cpp::PropertyConfigurator::configure( Env::getInstance("/home/batela/cnf/saio.cnf")->GetValue("logproperties") );
 	log.info("%s: %s",__FILE__, "Iniciando aplicacion de gruas...");
-
+/*
 	//Inicializamos el publcador para el IHM
 	RabbitConnection rc(Env::getInstance()->GetValue("logproperties"),Env::getInstance()->GetValue("logproperties"));
 	rc.initialize();
@@ -31,7 +31,7 @@ int main() {
 		log.info("%s: %s",__FILE__, 	"Conexion en Brujula OK");
 	else
 		log.error("%s: %s",__FILE__,	"Error en conexion en la Brujula");
-
+	*/
 	PosicionGrua pg;
 	//Inicializamos la lista de calles y campa
 	Campa campa ;
@@ -43,9 +43,10 @@ int main() {
 	Explorador *exGps 		= new Explorador (gps,gpsPort,true);
 
 	//Inicializamos la conexión la MOXA para obtener la posicion del brazo
+
 	IOEnlace *brazo = new IOEnlace();
 	MODBUSPuerto *moxaPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertomoxa"), 9600);
-	Explorador *exBrazo = new Explorador (brazo,moxaPort,true);
+	MODBUSExplorador *exBrazo = new MODBUSExplorador (brazo,moxaPort);
 
 	//Inicializamos la comunicacion con el CATOS
 	CATOSEnlace *cts 			= new CATOSEnlace();
@@ -53,7 +54,7 @@ int main() {
 	Explorador *exCatos 	= new Explorador (cts,ctsPort,false);
 
 	while (true){
-		float angBrujula = brj.getBearing(); //Leemos lo que nos de la brujula
+		//float angBrujula = brj.getBearing(); //Leemos lo que nos de la brujula
 		if (gps->getGPS()->getCalidad() > 0){
 
 			if (gLat != gps->getGPS()->getLatitud() || gLon != gps->getGPS()->getLongitud() ){
@@ -68,10 +69,11 @@ int main() {
 				//exCatos->Enviar(strlen(cts->txbuffer),cts->txbuffer);
 			}
 		}
+		/*
 		brazo->getBrazo()->getAngulo();
 		brazo->getBrazo()->getAngulo();
 		brazo->getBrazo()->isLocks();
-
+		*/
 		log.info("%s: %s",__FILE__, "Esperando lectura correcta..");
 		sleep (1);
 
