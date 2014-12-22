@@ -43,6 +43,18 @@ void * httpservermanager(void * p)
 	return 0;
 }
 
+int PesaContainer (MODBUSExplorador * exBascula){
+	int res = 0;
+	int contador = 0;
+	((BSCLEnlace*)exBascula->getEnlace())->getBSCL()->SetEstable(false);
+	while (((BSCLEnlace*)exBascula->getEnlace())->getBSCL()->GetEstable()==false){
+		exBascula->Explora();
+		sleep (1);
+		if (contador++ >= 30) break;
+	}
+	if (((BSCLEnlace*)exBascula->getEnlace())->getBSCL()->GetEstable()==false) res = 1;
+	return res;
+}
 
 int main(int argc, char **argv) {
 	pthread_t idThLector;
@@ -57,16 +69,36 @@ int main(int argc, char **argv) {
 	RS232Puerto *bsclPort = new RS232Puerto(Env::getInstance()->GetValue("puertobascula"), 9600);
 	Explorador 	*exBSCL 		= new Explorador (bscl,bsclPort,true);
 	*/
-	IOEnlace *brazo = new IOEnlace();
+	IOEnlace *io = new IOEnlace();
 	MODBUSPuerto *moxaPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertomoxa"), 9600);
-	Explorador *exBrazo = new Explorador (brazo,moxaPort,true);
+	MODBUSExplorador *exGarra = new MODBUSExplorador (io,moxaPort);
 
 	while (true){
+		exGarra->Explora();
 		switch(estado){
+
 			case LOCK_ABIERTO:
-				break;
+			break;
 			case LOCK_CERRADO:
-							break;
+			break;
+			case ATRAPADO:
+				/*
+				if (PesaContainer(exBascula) == 0)
+					estado = PESADO;
+				else
+					estado = ERROR;
+				*/
+			break;
+			case PESADO:
+				//Actualizar BBDD
+				estado = FIN;
+			break;
+			case ERROR:
+				estado = FIN;
+			break;
+			case FIN:
+			break;
+
 		}
 		sleep (10);
 	}

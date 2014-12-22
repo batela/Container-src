@@ -12,8 +12,8 @@ namespace container {
 extern log4cpp::Category &log;
 
 GPSEnlace::GPSEnlace() {
-	// TODO Auto-generated constructor stub
-
+	SetStartByte('$');
+	SetEndByte('\n');
 }
 
 GPSEnlace::~GPSEnlace() {
@@ -31,7 +31,9 @@ int GPSEnlace::analizaTrama(char buffer[]){
 
 	return res;
 }
-
+/**
+ * res = 0 no error
+ */
 int GPSEnlace::completaGPS (vector<std::string> items, GPS &gps){
 	log.info("%s: %s",__FILE__, "Comenzando funcion..");
 

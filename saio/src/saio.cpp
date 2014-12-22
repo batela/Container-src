@@ -44,6 +44,7 @@ int main() {
 
 	//Inicializamos la conexión la MOXA para obtener la posicion del brazo
 
+	sleep (1000);
 	IOEnlace *brazo = new IOEnlace();
 	MODBUSPuerto *moxaPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertomoxa"), 9600);
 	MODBUSExplorador *exBrazo = new MODBUSExplorador (brazo,moxaPort);

@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include "Enlace.h"
 #include "Puerto.h"
+#include "RS232Puerto.h"
 #include "Orden.h"
 #include "Env.h"
 
@@ -29,6 +30,7 @@ public:
 	friend void *lector( void *ptr );
 	int Enviar (int longitud, Orden orden );
 	int Enviar (int longitud, char* buffer );
+	int Explora();
 	bool Abrir();
 	bool Cerrar();
 	bool sigue ;

@@ -10,7 +10,6 @@
 namespace container {
 extern log4cpp::Category &log;
 MODBUSExplorador::MODBUSExplorador(Enlace* e, Puerto* p) : Explorador (e,p,false){
-	// TODO Auto-generated constructor stub
 	Abrir();
 	Explora();
 }
@@ -23,7 +22,9 @@ int MODBUSExplorador::Explora (){
 	log.info("%s: %s",__FILE__, "Comienza exploracion MODBUS");
 	int res = 0 ;
 	char buffer[256];
-	res= ((MODBUSPuerto*)getPuerto())->leer(0x01,0,4,buffer);
+	if (((MODBUSPuerto*)getPuerto())->leer(0x01,0,4,buffer) > 0)
+		getEnlace()->analizaTrama(buffer);
+
 	log.info("%s: %s",__FILE__, "Termina exploracion MODBUS");
 }
 } /* namespace container */

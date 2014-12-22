@@ -27,6 +27,7 @@ public:
 	void cerrar();
 	int reabrir();
 	int leer (char buffer[]);
+	int leerSimple (char data);
 	int escribir (char buffer[], int count);
 private:
 	int baudrate;

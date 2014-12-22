@@ -16,11 +16,14 @@
 #include "service.h"
 
 #include "RS232Puerto.h"
+#include "MODBUSPuerto.h"
+#include "IOEnlace.h"
 #include "BSCLEnlace.h"
 #include "Explorador.h"
+#include "MODBUSExplorador.h"
 using namespace std;
 using namespace container;
-enum ESTADO {LOCK_ABIERTO, LOCK_CERRADO, PESADO, ATRAPADO, SUBIENDO, SOLTADO };
+enum ESTADO {LOCK_ABIERTO, LOCK_CERRADO, PESADO, ATRAPADO, SUBIENDO, SOLTADO,ERROR,FIN };
 
 
 #endif /* KEMEN_H_ */

@@ -18,7 +18,8 @@ public:
 	BSCLEnlace();
 	virtual ~BSCLEnlace();
 	int analizaTrama (char buffer []);
-	Bascula * getGPS () {return &bascula;} ;
+	int VerificaTrama (char buffer[]);
+	Bascula * getBSCL () {return &bascula;} ;
 
 private:
 	int completaBSCL (vector<std::string> items, Bascula &gps);

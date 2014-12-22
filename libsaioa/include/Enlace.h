@@ -21,11 +21,22 @@ public:
 	Enlace();
 	virtual ~Enlace();
 	virtual int analizaTrama(char * buffer) {return 0;};
+	virtual int VerificaTrama (char buffer[]){return 0;};
+	void SetStartByte	(char a) { startByte = a;} ;
+	void SetEndByte		(char a) { endByte = a;} ;
+	char GetStartByte	() { return startByte ;} ;
+	char GetEndByte		() { return endByte ;} ;
+
 	char txbuffer[256];
 	char rxbuffer[256];
+
 protected:
 	std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) ;
 	std::vector<std::string> split(const std::string &s, char delim);
+
+private:
+	char startByte;
+	char endByte;
 };
 
 } /* namespace container */

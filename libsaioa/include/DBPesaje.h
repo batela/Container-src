@@ -18,6 +18,7 @@ public:
 	virtual ~DBPesaje();
 	int ReadHistoricData (string startdate, string enddate,string &data);
 	int ReadMaxDayData (string today, string &data);
+	int InsertData (int canal,float valor);
 };
 
 } /* namespace container */

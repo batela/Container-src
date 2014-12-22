@@ -92,6 +92,16 @@ extern log4cpp::Category &log;
 		return count;
 	}
 
+	int RS232Puerto::leerSimple (char data){
+			int count = 0 ;
+			int res = 0;
+
+			if( (res = serial_port.rdbuf()->in_avail()) > 0  ){
+				serial_port.get(data);
+			}
+
+			return res;
+		}
 	int RS232Puerto::escribir (char buffer[], int count){
 			serial_port.write( buffer, count ) ;
 			return 0;
