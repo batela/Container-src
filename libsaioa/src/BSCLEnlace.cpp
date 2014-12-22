@@ -49,7 +49,7 @@ int BSCLEnlace::VerificaTrama (char buffer[])
 int BSCLEnlace::completaBSCL (vector<std::string> items, Bascula &bsc){
 	log.info("%s: %s",__FILE__, "Comenzando funcion..");
 	bsc.SetPeso(atoi(items[2].data()));
-	bsc.SetSigno((char)items[1].data());
+	//bsc.SetSigno((char)items[1].data());
 	log.info("%s: %s",__FILE__, "Terminando funcion!!");
 	return 0;
 }

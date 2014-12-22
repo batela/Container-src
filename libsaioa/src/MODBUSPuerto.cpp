@@ -53,10 +53,9 @@ namespace container {
 	int MODBUSPuerto::leer (int cod, int inicio, int tam,char  buffer[]){
 		log.info("%s: %s",__FILE__, "Inicio funcion leer");
 		int count = 0 ;
-
 		switch (cod){
 		case 0x01:
-			if ((count =  modbus_read_bits(ctx,0,4, (unsigned char*)buffer)) == -1){
+			if ((count =  modbus_read_input_bits(ctx,inicio,tam, (unsigned char*)buffer)) == -1){
 					log.error("%s\n", modbus_strerror(errno));
 			}
 			break;

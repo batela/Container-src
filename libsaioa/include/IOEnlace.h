@@ -15,17 +15,17 @@
 #include "modbus-ct.h"
 #include "PosicionBrazo.h"
 #include "Enlace.h"
-
+#include "Locks.h"
 namespace container {
 
 class IOEnlace: public container::Enlace {
 public:
 	IOEnlace();
 	virtual ~IOEnlace();
-	int analizaTrama ( unsigned short trama[]);
-	PosicionBrazo* getBrazo () {return &pb;} ;
+	int analizaTrama ( char * trama);
+	Locks * GetLocks() {return &locks;};
 private:
-	PosicionBrazo pb;
+	Locks locks;
 };
 
 } /* namespace container */

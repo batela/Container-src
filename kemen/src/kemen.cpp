@@ -63,43 +63,53 @@ int main(int argc, char **argv) {
 	log4cpp::Category &log  = log4cpp::Category::getRoot();
 	log4cpp::PropertyConfigurator::configure( Env::getInstance("/home/batela/cnf/saio.cnf")->GetValue("logproperties") );
 	log.info("%s: %s",__FILE__, "Iniciando aplicacion de gruas...");
-	/*
+
 	int iret1 = pthread_create( &idThLector, NULL, httpservermanager, NULL);
 	BSCLEnlace *bscl = new BSCLEnlace ();
 	RS232Puerto *bsclPort = new RS232Puerto(Env::getInstance()->GetValue("puertobascula"), 9600);
 	Explorador 	*exBSCL 		= new Explorador (bscl,bsclPort,true);
-	*/
+
 	IOEnlace *io = new IOEnlace();
 	MODBUSPuerto *moxaPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertomoxa"), 9600);
 	MODBUSExplorador *exGarra = new MODBUSExplorador (io,moxaPort);
 
 	while (true){
-		exGarra->Explora();
-		switch(estado){
-
-			case LOCK_ABIERTO:
-			break;
-			case LOCK_CERRADO:
-			break;
-			case ATRAPADO:
-				/*
-				if (PesaContainer(exBascula) == 0)
-					estado = PESADO;
-				else
-					estado = ERROR;
-				*/
-			break;
-			case PESADO:
-				//Actualizar BBDD
-				estado = FIN;
-			break;
-			case ERROR:
-				estado = FIN;
-			break;
-			case FIN:
-			break;
-
-		}
+		if (exGarra->Explora() == 0){
+			for (int i= 0 ;i < 4 ; i++){
+				int res = io->GetLocks()->GetLock(i+1);
+				switch(estado){
+					case LOCK_ABIERTO:
+						if (res == 0)
+							estado = FIN;
+						else
+							estado = LOCK_CERRADO;
+					break;
+					case LOCK_CERRADO:
+						if (res == 0)
+							estado = FIN;
+						else
+							estado = ATRAPADO;
+					break;
+					case ATRAPADO:
+								/*
+								if (PesaContainer(exBascula) == 0)
+									estado = PESADO;
+								else
+									estado = ERROR;
+								*/
+					break;
+					case PESADO:
+							//Actualizar BBDD
+								estado = FIN;
+					break;
+					case ERROR:
+						estado = FIN;
+					break;
+					case FIN:
+					break;
+				}//swtich
+			}//for
+		}//if
 		sleep (10);
 	}
 	return 0;
