@@ -59,36 +59,46 @@ int PesaContainer (MODBUSExplorador * exBascula){
 int main(int argc, char **argv) {
 	pthread_t idThLector;
 	ESTADO estado;
+	DBPesaje db("/home/batela/db/kemen.db");
 
 	log4cpp::Category &log  = log4cpp::Category::getRoot();
 	log4cpp::PropertyConfigurator::configure( Env::getInstance("/home/batela/cnf/saio.cnf")->GetValue("logproperties") );
 	log.info("%s: %s",__FILE__, "Iniciando aplicacion de gruas...");
 
+	/*
 	int iret1 = pthread_create( &idThLector, NULL, httpservermanager, NULL);
 	BSCLEnlace *bscl = new BSCLEnlace ();
 	RS232Puerto *bsclPort = new RS232Puerto(Env::getInstance()->GetValue("puertobascula"), 9600);
 	Explorador 	*exBSCL 		= new Explorador (bscl,bsclPort,true);
-
+*/
 	IOEnlace *io = new IOEnlace();
 	MODBUSPuerto *moxaPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertomoxa"), 9600);
 	MODBUSExplorador *exGarra = new MODBUSExplorador (io,moxaPort);
 
 	while (true){
 		if (exGarra->Explora() == 0){
-			for (int i= 0 ;i < 4 ; i++){
+			log.info("%s: %s",__FILE__, "Entrando en bucle de garra");
+			estado=LOCK_ABIERTO;
+			for (int i= 0 ;i < 4 && estado !=FIN ; i++){
 				int res = io->GetLocks()->GetLock(i+1);
 				switch(estado){
 					case LOCK_ABIERTO:
 						if (res == 0)
 							estado = FIN;
-						else
+						else{
+							log.info("%s: %s",__FILE__, "LOCKS CERRADO");
 							estado = LOCK_CERRADO;
+						}
 					break;
 					case LOCK_CERRADO:
-						if (res == 0)
+						if (res == 0){
+							log.info("%s: %s",__FILE__, "CONTAINER NO ATRAPADO..SALIENDO");
 							estado = FIN;
-						else
+						}
+						else{
+							log.info("%s: %s",__FILE__, "CONTAINER ATRAPADO");
 							estado = ATRAPADO;
+						}
 					break;
 					case ATRAPADO:
 								/*
@@ -97,18 +107,24 @@ int main(int argc, char **argv) {
 								else
 									estado = ERROR;
 								*/
+
+							log.info("%s: %s",__FILE__, "CONTAINER PESADO");
+							estado = PESADO;
 					break;
 					case PESADO:
-							//Actualizar BBDD
-								estado = FIN;
+							db.Open();
+							db.InsertData(1,12.4);
+							db.Close();
+							estado = FIN;
 					break;
 					case ERROR:
 						estado = FIN;
 					break;
 					case FIN:
+						log.info("%s: %s",__FILE__, "Saliendo de bucle");
 					break;
 				}//swtich
-			}//for
+			} //for
 		}//if
 		sleep (10);
 	}

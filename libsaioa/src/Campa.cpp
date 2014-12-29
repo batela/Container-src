@@ -206,11 +206,15 @@ void Campa::CalcularPosicion(float lat, float lon, PosicionGrua &pg) {
   	indice = indiceReales;
   	pg.setYsobreCalle(linePY);
   	pg.setXsobreCalle(linePX);
+  	pg.setDistanciaCalle(distanciaReal);
+  	pg.setFila((int)linePY/(3.045+0.09));
   }
   else if ((distanciaReal > distanciaVirtual) && (indiceVirtuales != -1)){
   	indice = indiceVirtuales;
   	pg.setYsobreCalle(linePYVirtual);
   	pg.setXsobreCalle(linePXVirtual);
+  	pg.setDistanciaCalle(distanciaVirtual);
+  	pg.setFila((int)linePYVirtual/(3.045+0.09));
   }
   log.debug("%s: %s: %d",__FILE__, "Indice asignado: ", indice);
   if (indice >= 0){

@@ -21,7 +21,7 @@ namespace container {
 
 class GPSEnlace: public container::Enlace {
 public:
-	static const int LONGITUD_GPGGA = 14;
+	static const int LONGITUD_GPGGA = 15;
 
 	GPSEnlace();
 	virtual ~GPSEnlace();

@@ -21,6 +21,7 @@
 #include "BSCLEnlace.h"
 #include "Explorador.h"
 #include "MODBUSExplorador.h"
+#include "DBPesaje.h"
 using namespace std;
 using namespace container;
 enum ESTADO {LOCK_ABIERTO, LOCK_CERRADO, PESADO, ATRAPADO, SUBIENDO, SOLTADO,ERROR,FIN };

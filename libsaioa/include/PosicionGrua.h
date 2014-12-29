@@ -8,7 +8,14 @@
 #ifndef POSICIONGRUA_H_
 #define POSICIONGRUA_H_
 #include "Env.h"
+/*
+ * Para ellos  Bloque es para nosotros Calle + Bloque
+ * Para ellos  Calle es para nosotros Linea (distanciaACalle)
+ * Para ellos  Fila esn para nosotros Fila (Se debe calcular a partir de XsobreCalle;)
+ */
+
 namespace container {
+
 class PosicionGrua {
 public:
 	PosicionGrua();
@@ -26,21 +33,25 @@ public:
 	const char getCalle() const { return calle;	}
 	float getYNOATUM (){ return Xrelativo ;} ;
 	float getXNOATUM (){ return (-1)*Yrelativo ;} ;
-	float getXsobreCalle() const {		return XsobreCalle;	}
+	float getXsobreCalle() const {		return XsobreCalle;	} //la fila
 	float getYsobreCalle() const {		return YsobreCalle;	}
+	float getDistanciaCalle() const {		return distanciaACalle;	} //Seria la linea
+	int getFila () {return fila;};
 
-	void setEasting(float easting) {		this->easting = easting;	}
-	void setGlat(float glat) {		this->glat = glat;	}
-	void setGlon(float glon) {		this->glon = glon;	}
-	void setLat(const string& lat) {		this->lat = lat;	}
-	void setLon(const string& lon) {		this->lon = lon;	}
-	void setNorting(float norting) { this->norting = norting;	}
-	void setXrelativo(float xrelativo) {Xrelativo = xrelativo;}
-	void setYrelativo(float yrelativo) {	Yrelativo = yrelativo;	}
-	void setBloque(char bloque) {this->bloque = bloque;	}
-	void setCalle(char calle) { this->calle = calle;	}
-	void setXsobreCalle(float xsobreCalle) {		XsobreCalle = xsobreCalle;	}
-	void setYsobreCalle(float ysobreCalle) {		YsobreCalle = ysobreCalle;	}
+	void setEasting		(float easting) {		this->easting = easting;	}
+	void setGlat(			float glat) 		{		this->glat = glat;	}
+	void setGlon			(float glon) 		{		this->glon = glon;	}
+	void setLat				(const string& lat) {		this->lat = lat;	}
+	void setLon				(const string& lon) {		this->lon = lon;	}
+	void setNorting		(float norting) 	{ this->norting = norting;	}
+	void setXrelativo	(float xrelativo) {Xrelativo = xrelativo;}
+	void setYrelativo	(float yrelativo) {	Yrelativo = yrelativo;	}
+	void setBloque		(char bloque) 		{this->bloque = bloque;	}
+	void setCalle			(char calle) 			{ this->calle = calle;	}
+	void setXsobreCalle			(float xsobreCalle) {		XsobreCalle = xsobreCalle;	} //la fila
+	void setYsobreCalle			(float ysobreCalle) {		YsobreCalle = ysobreCalle;	}
+	void setDistanciaCalle	(float dist) 				{		distanciaACalle = dist;	} //Sería la linea
+	void setFila (int a) {fila = a;};
 
 	void setContainer (int a) { container = a; }
 	int  getContainer () {return container; }
@@ -55,6 +66,8 @@ private:
 	float Xrelativo;
 	float YsobreCalle;
 	float XsobreCalle;
+	float distanciaACalle;
+	int fila;
 
 	char calle;
 	char bloque;

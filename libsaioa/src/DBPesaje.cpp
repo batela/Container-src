@@ -94,10 +94,10 @@ int DBPesaje::InsertData (int canal,float valor){
 
 	time_t rawtime;
 	struct tm * timeinfo;
-	char now [11];
+	char now [20];
 	time (&rawtime);
 	timeinfo = localtime (&rawtime);
-	strftime (now,11,"%F",timeinfo);
+	strftime (now,20,"%F %T",timeinfo);
 	char query[80];
 
 	sprintf (query,"UPDATE tvalores SET valor=%f,fecha='%s' WHERE idCanal=%d",valor,now,canal);
@@ -108,6 +108,9 @@ int DBPesaje::InsertData (int canal,float valor){
   if ( sqlite3_prepare(db,query,-1,&statement,0) == SQLITE_OK ) {
   		res = sqlite3_step(statement);
   		sqlite3_finalize(statement);
+  }
+  else {
+  	log.error("%s-%s: %s", __FILE__,__FUNCTION__, "Error al ejecutar query") ;
   }
   log.info("%s-%s: %s", __FILE__,__FUNCTION__, "Ending function..") ;
 	return res ;

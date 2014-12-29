@@ -48,7 +48,7 @@ void* lector (void * explorador){
 
 
 void* lector (void * explorador){
-	log.info("%s: %s %s",__FILE__, "Lanzado thread lector...");
+	log.info("%s: %s",__FILE__, "Lanzado thread lector...");
 
 	Explorador * exp = (Explorador*)explorador;
 	//char buffer[256];
@@ -69,7 +69,7 @@ void* lector (void * explorador){
 			exp->getPuerto()->cerrar();
 		}
 		log.info("%s: %s",__FILE__, "Esperamos trama un segundo..");
-		//nanosleep(&tim , &tim2);
+		nanosleep(&tim , &tim2);
 	}
 	printf ("Salimos");
 }
@@ -112,7 +112,7 @@ int Explorador::Explora (){
 					indice = 0 ;
 					getEnlace()->rxbuffer[indice]= 0 ;
 					count= ((RS232Puerto*)getPuerto())->leerSimple(data);
-					if (res > 0 && data== enlace->GetStartByte()) {
+					if (count > 0 && data == enlace->GetStartByte()) {
 						getEnlace()->rxbuffer[indice++] = data;
 						estado = 1;
 					}
@@ -120,11 +120,10 @@ int Explorador::Explora (){
 						res = 1;
 						estado = 3;
 					}
-					else sleep (1);
 				break;
 				case 1:
 					count = ((RS232Puerto*)getPuerto())->leerSimple(data);
-					if (res == 0 || data==enlace->GetEndByte()) {
+					if (count == 0 || data==enlace->GetEndByte()) {
 						estado = 2;
 					}
 					getEnlace()->rxbuffer[indice++] = data;
