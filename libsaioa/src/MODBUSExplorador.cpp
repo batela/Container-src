@@ -19,7 +19,7 @@ MODBUSExplorador::~MODBUSExplorador() {
 
 
 int MODBUSExplorador::Explora (){
-	log.info("%s: %s",__FILE__, "Comienza exploracion MODBUS");
+	log.debug("%s: %s",__FILE__, "Comienza exploracion MODBUS");
 	int res = 1 ;
 	char buffer[256];
 	res = 0 ;
@@ -34,7 +34,7 @@ int MODBUSExplorador::Explora (){
 	}
 
 
-	log.info("%s: %s",__FILE__, "Termina exploracion MODBUS");
+	log.debug("%s: %s",__FILE__, "Termina exploracion MODBUS");
 	return res;
 }
 } /* namespace container */

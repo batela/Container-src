@@ -10,45 +10,9 @@
 
 namespace container {
 extern log4cpp::Category &log;
-/*
-void* lector (void * explorador){
-	log.info("%s: %s %s",__FILE__, "Lanzado thread lector...");
-
-	Explorador * exp = (Explorador*)explorador;
-	//char buffer[256];
-	int res = 0 ;
-	struct timespec tim, tim2;
-	tim.tv_sec = 0;
-	//tim.tv_nsec = 500000000L;
-	tim.tv_nsec = 500000000L;
-	while (exp->sigue){
-		res = 0;
-		if (exp->getPuerto()->getIsOpen()== false) {
-			res = exp->getPuerto()->abrir();
-		}
-		else {
-			exp->getEnlace()->rxbuffer[0]= 0;
-			res = exp->getPuerto()->leer(exp->getEnlace()->rxbuffer);
-		}
-		if (res >0){
-			log.debug("%s: %s %s",__FILE__, "Trama recibida..", exp->getEnlace()->rxbuffer);
-			exp->getEnlace()->analizaTrama(exp->getEnlace()->rxbuffer);
-			exp->getEnlace()->rxbuffer[0]= 0;
-		}
-		else if (res < 0){
-			exp->getPuerto()->cerrar();
-		}
-		log.info("%s: %s",__FILE__, "Esperamos trama un segundo..");
-		nanosleep(&tim , &tim2);
-		//sleep (1);
-	}
-	printf ("Salimos");
-}
-*/
-
 
 void* lector (void * explorador){
-	log.info("%s: %s",__FILE__, "Lanzado thread lector...");
+	log.debug("%s: %s",__FILE__, "Lanzado thread lector...");
 
 	Explorador * exp = (Explorador*)explorador;
 	int contador = 0 ;
@@ -97,8 +61,21 @@ Explorador::~Explorador() {
 void Explorador::LanzarExplorador (){
 	log.info("%s: %s", __FILE__, "Abriendo puerto");
 	if (puerto->abrir() != 0) log.error("%s: %s", __FILE__, "Error abriendo puerto!!");
-	int iret1 = pthread_create( &idThLector, NULL, lector, this);
+	int res = pthread_create( &idThLector, NULL, lector, this);
 
+	struct sched_param params;
+	  // We'll set the priority to the maximum.
+	params.sched_priority = sched_get_priority_max(SCHED_FIFO);
+	res = pthread_setschedparam(idThLector, SCHED_FIFO, &params);
+	if (res != 0) {
+		log.error("%s: %s", __FILE__, "Unsuccessful in setting thread realtime prio" );
+	}
+
+	int policy = 0;
+	res = pthread_getschedparam(idThLector, &policy, &params);
+	if (res != 0) {
+		log.error("%s: %s", __FILE__,"Couldn't retrieve real-time scheduling paramers");
+	}
 }
 
 int Explorador::Explora (){
@@ -120,6 +97,7 @@ int Explorador::Explora (){
 					getEnlace()->rxbuffer[indice]= 0 ;
 					count= ((RS232Puerto*)getPuerto())->leerSimple(data);
 					if (count > 0 && data == enlace->GetStartByte()) {
+						nanosleep(&tim , &tim2);
 						getEnlace()->rxbuffer[indice++] = data;
 						estado = 1;
 					}
@@ -133,6 +111,9 @@ int Explorador::Explora (){
 					if (count == 0 || data==enlace->GetEndByte()) {
 						estado = 2;
 					}
+					else {
+						nanosleep(&tim , &tim2);
+					}
 					getEnlace()->rxbuffer[indice++] = data;
 				break;
 				case 2:
@@ -142,7 +123,7 @@ int Explorador::Explora (){
 					estado = 3 ;
 				break;
 			}
-			nanosleep(&tim , &tim2);
+			//nanosleep(&tim , &tim2);
 	}
 	//log.info("%s: %s", __FILE__, "Fin de exploracion");
 	return 1;

@@ -44,7 +44,7 @@ void * httpservermanager(void * p)
 
 	return 0;
 }
-
+/*
 int PesaContainer (Explorador * exBascula){
 	int res = 0;
 	int contador = 0;
@@ -58,10 +58,70 @@ int PesaContainer (Explorador * exBascula){
 	if (((BSCLEnlace*)exBascula->getEnlace())->getBSCL()->GetEstable()==false) res = 1;
 	return res;
 }
+*/
+bool pesando 			= false ;
+bool pesajeHecho 	= false ;
+
+void * PesaContainer (void * exBascula){
+
+	DBPesaje db("/home/batela/bascula/db/kemen.db");
+	int pesajesCorrectos = atoi(Env::getInstance()->GetValue("pesajescorrectos").data());
+	int pesajes 		= 0 ;
+	float pesoMedio	=0;
+	int pesoMaximo	=0;
+	int esperaPesada = atoi(Env::getInstance()->GetValue("esperapeso").data());
+	Explorador* ex = (Explorador *) exBascula;
+	vector<int> pesos;
+	struct timespec tim, tim2;
+	tim.tv_sec 	= 0;
+	tim.tv_nsec = 100 * 1000000L; //en milisegundos
+	bool delayHecho = false;
+	while (true){
+		tim.tv_nsec = 100 * 1000000L;
+		pesos.clear();
+		pesajes = pesoMedio = 0;
+
+		log.debug("%s: %s",__FILE__, "Esperando señal de pesado");
+		delayHecho = false;
+		while (pesando==true && pesajes< pesajesCorrectos && pesajeHecho == false){
+			if (delayHecho == false) {
+				sleep (esperaPesada);
+				delayHecho = true;
+			}
+			tim.tv_nsec = 200 * 1000000L;
+			int peso = ((BSCLEnlace*)ex->getEnlace())->getBSCL()->GetPeso();
+			if (((BSCLEnlace*)ex->getEnlace())->getBSCL()->GetSigno() !='-'){
+				log.info("%s: %s",__FILE__, "Lectura Pesaje....");
+				pesos.push_back(peso);
+				if (pesajes++<= pesajesCorrectos) nanosleep(&tim , &tim2);
+			}
+		}
+		//Actualizamos la base de datos
+		if (pesajes>= pesajesCorrectos){
+			for(std::vector<int>::iterator it = pesos.begin(); it != pesos.end(); ++it) {
+			    if (pesoMaximo < *it) pesoMaximo= *it;
+			    pesoMedio = pesoMedio + *it;
+			    log.info("%s: %s %d",__FILE__, " >>>Peso leido...",*it);
+			}
+			pesoMedio = pesoMedio / pesos.size();
+			log.info("%s: %s %d",__FILE__, "Peso Maximo container calculado...",pesoMaximo);
+			log.info("%s: %s %f",__FILE__, "Peso-Medio container calculado...",pesoMedio);
+			pesajeHecho = true;
+			db.Open();
+			db.InsertData(1,pesoMedio);
+			db.Close();
+		}
+
+		//Esperamos por defecto 100ms
+		nanosleep(&tim , &tim2);
+	}
+	return 0;
+}
 
 int main(int argc, char **argv) {
 
 	pthread_t idThLector;
+	pthread_t idThPesaje;
 
 	log4cpp::PropertyConfigurator::configure( Env::getInstance("/home/batela/bascula/cnf/bascula.cnf")->GetValue("logproperties") );
 
@@ -95,10 +155,11 @@ int main(int argc, char **argv) {
 	IOEnlace *io = new IOEnlace();
 	MODBUSPuerto *moxaPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertomoxa"), 9600);
 	MODBUSExplorador *exGarra = new MODBUSExplorador (io,moxaPort);
-	bool pesajeHecho = false ;
+
 
 	//Finalmente lanzamos el thread http
-	int iret1 = pthread_create( &idThLector, NULL, httpservermanager,NULL);
+	pthread_create( &idThLector, NULL, httpservermanager,NULL);
+	pthread_create( &idThPesaje, NULL, PesaContainer,exBSCL);
 	estado = ESPERA_CARRO_ENVIA ;
 	while (true){
 		log.debug("%s: %s",__FILE__, "Lanzando lectura de módulo IO");
@@ -112,25 +173,18 @@ int main(int argc, char **argv) {
 			switch (estado){
 				case ESPERA_CARRO_ENVIA:
 					log.info("%s: %s",__FILE__, "Proceso de pesaje en: ESPERA_CARRO_VIA");
+					pesando 		= false;
+					pesajeHecho = false ;
 
 					if (isCarro && isPalpa && isTwisl) estado = ESPERA_PALPADORES_NO_APOYO;
 					else estado = ESPERA_CARRO_ENVIA;
-					pesajeHecho = false;
+
 				break;
 				case ESPERA_PALPADORES_NO_APOYO:
 					log.info("%s: %s",__FILE__, "Proceso de pesaje en: ESPERA_PALPADORES_NO_APOYO");
-
-					if (isCarro && !isPalpa && isTwisl && isSubir && !pesajeHecho){
-						if (PesaContainer(exBSCL) == 0){
-							db.Open();
-							db.InsertData(1,bscl->getBSCL()->GetPeso());
-							db.Close();
-							pesajeHecho = true;
-							estado = ESPERA_SOLTAR;
-
-							log.info("%s: %s",__FILE__, "Proceso de pesaje en: Pesaje Hecho");
-						}
-						else estado = ESPERA_CARRO_ENVIA;
+					if (isCarro && !isPalpa && isTwisl && isSubir ){
+						pesando = true;
+						estado = ESPERA_SOLTAR;
 					}
 					else if (!isTwisl) estado = ESPERA_CARRO_ENVIA;
 					else estado = ESPERA_PALPADORES_NO_APOYO;

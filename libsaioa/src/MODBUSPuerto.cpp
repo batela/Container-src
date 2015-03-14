@@ -76,7 +76,7 @@ namespace container {
 			break;
 		}
 
-		log.info("%s: %s",__FILE__, "Fin funcion leer modbus!!");
+		log.debug("%s: %s",__FILE__, "Fin funcion leer modbus!!");
 		return count;
 	}
 

@@ -26,6 +26,35 @@ namespace container {
 		pthread_mutex_unlock(&mtxBascula);
 		return valor;
 	}
+
+	void Bascula::SetIO(int a, int b, int c, int d)
+	{
+			pthread_mutex_lock(&mtxBascula);
+			this->isCarro = a;
+			this->isPalpa = b;
+			this->isTwisl = c;
+			this->isSubir = d;
+			pthread_mutex_unlock(&mtxBascula);
+	}
+	void Bascula::GetIO(int &a, int &b, int &c, int &d)
+	{
+		pthread_mutex_lock(&mtxBascula);
+		a = this->isCarro;
+		b = this->isPalpa;
+		c = this->isTwisl;
+		d = this->isSubir;
+		pthread_mutex_unlock(&mtxBascula);
+	}
+
+	int Bascula::Actualiza(int peso, char signo)
+	{
+		pthread_mutex_lock(&mtxBascula);
+
+		this->peso = peso ;
+		this->signo = signo;
+
+		pthread_mutex_unlock(&mtxBascula);
+	}
 	/***
 	 *
 	 */

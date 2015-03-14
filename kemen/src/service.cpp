@@ -28,14 +28,17 @@ using namespace std;
 using namespace std;
 extern BSCLEnlace *bscl;
 service_resource::service_resource()
-{}
+{
+	pthread_mutex_init(&mtxService, NULL);
+}
 
 service_resource::~service_resource()
 {}
 
 void service_resource::render_GET(const http_request &req, http_response** res)
 {
-	std::cout << "service_resource::render_GET()" << std::endl;
+	//std::cout << "service_resource::render_GET()" << std::endl;
+	pthread_mutex_lock(&mtxService);
 	map <string , string,arg_comparator> queryitems;
 
   if (verbose) std::cout << req;
@@ -43,7 +46,6 @@ void service_resource::render_GET(const http_request &req, http_response** res)
   string operation = req.get_arg("op");
   req.get_args(queryitems);
 
-  //Tratamiento  de la query
   if (operation.compare("historico")==0)
   	this->getDBHistoricData(queryitems.find("startdate")->second,queryitems.find("enddate")->second,response);
   else if (operation.compare("max") == 0)
@@ -55,7 +57,9 @@ void service_resource::render_GET(const http_request &req, http_response** res)
   else std::cout << "Operacion: " << req.get_arg("op") << " no localizada."<<"\n";
 
   *res = new http_response(http_response_builder(response, 200).string_response());
-   if (verbose) std::cout << **res;
+
+  pthread_mutex_unlock(&mtxService);
+  //if (verbose) std::cout << **res;
 }
 
 
@@ -146,7 +150,7 @@ void service_resource::getDBMaxDayData(string startdate, string enddate,string c
 	DBPesaje db("/home/batela/bascula/db/kemen.db");
 	db.Open();
 	db.ReadMaxDayData(startdate,enddate,count,data);
-	std::cout << data;
+	//std::cout << data;
 	db.Close();
 }
 /**
@@ -159,7 +163,7 @@ void service_resource::getDBHistoricData(string startdate, string enddate,string
 	DBPesaje db("/home/batela/bascula/db/kemen.db");
 	db.Open();
 	db.ReadHistoricData(startdate,enddate,data);
-	std::cout << data;
+	//std::cout << data;
 	db.Close();
 }
 
@@ -173,7 +177,7 @@ void service_resource::getLastTenData(string &data)
 	DBPesaje db("/home/batela/bascula/db/kemen.db");
 	db.Open();
 	db.ReadLastTenData(data);
-	std::cout << data;
+	//std::cout << data;
 	db.Close();
 }
 
@@ -191,9 +195,11 @@ void service_resource::getLastData(string &data)
 	strftime (now,20,"%F %T",timeinfo);
 	char isValido = (bscl->getBSCL()->GetEstable()==true)?'V':'N';
 	//sprintf(raw,"%d;%c;%c;%d;%s\n",1,isValido,bscl->getBSCL()->GetSigno(),bscl->getBSCL()->GetPeso(),now);
-	sprintf(raw,"%d;%c;%c;%d;%s\n",1,isValido,bscl->getBSCL()->GetSigno(),bscl->getBSCL()->GetPeso(),now);
+	int isCarro, isPalpa, isTwisl, isSubir;
+	bscl->getBSCL()->GetIO(isCarro,isPalpa,isTwisl,isSubir);
+	sprintf(raw,"%d;%c;%c;%d;%s;%d;%d;%d;%d\n",1,isValido,bscl->getBSCL()->GetSigno(),bscl->getBSCL()->GetPeso(),now,isCarro,isPalpa,isTwisl,isSubir);
 	data =  raw;
-	std::cout << "enviado: " << data << std::endl;
+	std::cout << "Enviado: " << data << std::endl;
 }
 
 /*

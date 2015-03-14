@@ -32,11 +32,15 @@ int BSCLEnlace::analizaTrama(char *buffer){
 	if (VerificaTrama(buffer) == 0){
 		memset (peso,0,10);
 		memcpy (peso, &buffer[3],5);
+		completaBSCL(atoi(peso),buffer[2],this->bascula);
+		/*
 		vector<std::string> items;
-		items.push_back(&buffer[2]);
-		items.push_back(&buffer[3]);
+
+		items.push_back(&buffer[2]); //signo
+		items.push_back(&buffer[3]); //signo
 		items.push_back(peso);
 		completaBSCL(items,this->bascula);
+		*/
 	}
 	else {
 		log.error("%s: %s",__FILE__, "Trama Bascula incorrecta");
@@ -56,6 +60,32 @@ int BSCLEnlace::VerificaTrama (char *buffer)
 	return res;
 }
 
+int BSCLEnlace::completaBSCL (int peso, char signo, Bascula &bsc){
+	log.debug("%s: %s",__FILE__, "Comenzando funcion.. completar bascula");
+	static int ultimoPeso = 0 ;
+	if (peso != ultimoPeso){
+		log.info("%s: %s %c%d",__FILE__, "***************Actualiza bascula: " , signo,peso);
+		bsc.Actualiza(peso,signo);
+		ultimoPeso = peso;
+	}
+
+	log.debug("%s: %s",__FILE__, "Terminando funcion!!");
+	return 0;
+}
+
+int BSCLEnlace::completaBSCL (vector<std::string> items, Bascula &bsc){
+	log.debug("%s: %s",__FILE__, "Comenzando funcion.. completar bascula");
+	static int ultimoPeso = 0 ;
+	int peso = atoi(items[2].data());
+	if (peso != ultimoPeso){
+
+		bsc.Actualiza(peso,items[0].at(0));
+	}
+
+	log.debug("%s: %s",__FILE__, "Terminando funcion!!");
+	return 0;
+}
+/*
 int BSCLEnlace::completaBSCL (vector<std::string> items, Bascula &bsc){
 	log.debug("%s: %s",__FILE__, "Comenzando funcion.. completar bascula");
 
@@ -78,5 +108,5 @@ int BSCLEnlace::completaBSCL (vector<std::string> items, Bascula &bsc){
 	log.debug("%s: %s",__FILE__, "Terminando funcion!!");
 	return 0;
 }
-
+*/
 } /* namespace container */

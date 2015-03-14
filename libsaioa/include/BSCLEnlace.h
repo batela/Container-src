@@ -22,6 +22,7 @@ public:
 	void Configure (string a, string b);
 private:
 	int completaBSCL (vector<std::string> items, Bascula &gps);
+	int completaBSCL (int peso, char signo, Bascula &bsc);
 	int numeroPesaje ;
 	int margenPesaje;
 	int pesajesCorrectos;
