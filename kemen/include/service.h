@@ -39,6 +39,8 @@ public:
 
 private:
 
+	pthread_mutex_t mtxService;
+
 
 };
 
