@@ -10,8 +10,7 @@
 namespace container {
 
 Locks::Locks() {
-	// TODO Auto-generated constructor stub
-
+	lock01=lock02=lock03=lock04= 0;
 }
 
 int Locks::GetLock (int i){

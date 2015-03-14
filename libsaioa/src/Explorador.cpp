@@ -51,12 +51,12 @@ void* lector (void * explorador){
 	log.info("%s: %s",__FILE__, "Lanzado thread lector...");
 
 	Explorador * exp = (Explorador*)explorador;
-	//char buffer[256];
+	int contador = 0 ;
 	int res = 0 ;
 	struct timespec tim, tim2;
 	tim.tv_sec = 0;
 	//tim.tv_nsec = 500000000L;
-	tim.tv_nsec = 500000000L;
+	tim.tv_nsec = atoi(Env::getInstance()->GetValue("exploradorperiod").data()) * 1000000L; //en milisegundos
 	while (exp->sigue){
 		res = 0;
 		if (exp->getPuerto()->getIsOpen()== false) {
@@ -68,10 +68,13 @@ void* lector (void * explorador){
 		if (res < 0){
 			exp->getPuerto()->cerrar();
 		}
-		log.info("%s: %s",__FILE__, "Esperamos trama un segundo..");
+		if (contador++ >= 100000) {
+			log.info("%s: %s",__FILE__,"Esperamos trama..");
+			contador = 0;
+		}
 		nanosleep(&tim , &tim2);
 	}
-	printf ("Salimos");
+	printf ("Salimos thread explorador..");
 }
 
 Explorador::Explorador() {
@@ -99,13 +102,17 @@ void Explorador::LanzarExplorador (){
 }
 
 int Explorador::Explora (){
-	log.info("%s: %s", __FILE__, "Comienza exploracion");
+	//log.info("%s: %s", __FILE__, "Comienza exploracion");
 
 	int estado =  0;
-	int res = 0;
 	char data;
+	int res = 0;
 	int count = 0 ;
 	int indice = 0;
+
+	struct timespec tim, tim2;
+	tim.tv_sec = 0;
+	tim.tv_nsec = atoi(Env::getInstance()->GetValue("charperiod").data()) * 1000000L; //en milisegundos
 	while (estado != 3){
 		switch (estado){
 				case 0:
@@ -116,7 +123,7 @@ int Explorador::Explora (){
 						getEnlace()->rxbuffer[indice++] = data;
 						estado = 1;
 					}
-					else if (count == -1) {
+					else if (count <=0 ) {
 						res = 1;
 						estado = 3;
 					}
@@ -130,13 +137,15 @@ int Explorador::Explora (){
 				break;
 				case 2:
 					getEnlace()->rxbuffer[indice] = 0 ;
+					log.info("%s: %s %s", __FILE__, "Trama leida",getEnlace()->rxbuffer );
 					res = getEnlace()->analizaTrama(getEnlace()->rxbuffer);
 					estado = 3 ;
 				break;
 			}
+			nanosleep(&tim , &tim2);
 	}
-	log.info("%s: %s", __FILE__, "Fin de exploracion");
-	return res;
+	//log.info("%s: %s", __FILE__, "Fin de exploracion");
+	return 1;
 }
 int Explorador::Enviar (int longitud, Orden orden ){
 	return 0 ;

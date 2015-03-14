@@ -20,14 +20,14 @@ public:
 	Puerto(string a, PORT_TYPE b );
 	virtual ~Puerto();
 
-	bool getIsOpen (){return isOpen;}
+	bool getIsOpen ()				{return isOpen;}
 	void setIsOpen (bool a) {isOpen = a;}
-	string getName (){return name ;}
-	void setName (string a){name = a;}
-	virtual int leer (char buffer[]){return 0 ;}
-	virtual int abrir (){return 0 ;}
-	virtual void cerrar (){};
+	string getName ()				{return name ;}
+	void setName (string a)	{name = a;}
+	virtual int 	abrir ()	{return 0 ;}
+	virtual void cerrar ()	{};
 	virtual int escribir (char buffer[], int count){return 0;}
+	virtual int leer (char buffer[]){return 0 ;}
 protected:
 	bool 			isOpen;
 	PORT_TYPE type;

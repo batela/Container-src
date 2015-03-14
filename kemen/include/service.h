@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <cstdio>
 #include "DBPesaje.h"
+#include "BSCLEnlace.h"
 using namespace std;
 using namespace httpserver;
 using namespace container;
@@ -31,9 +32,10 @@ public:
 
 	void render_DELETE(const http_request &req, http_response** res);
 	//User defined
-	void getDBMaxDayData(string today,string &data);
+	void getDBMaxDayData(string startdate,string enddate,string limit,string &data);
 	void getDBHistoricData(string startdate, string enddate,string &data);
 	void getLastData(string &data);
+	void getLastTenData(string &data);
 
 private:
 

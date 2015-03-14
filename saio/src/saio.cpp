@@ -19,11 +19,11 @@ int main() {
 	log4cpp::Category &log  = log4cpp::Category::getRoot();
 	log4cpp::PropertyConfigurator::configure( Env::getInstance("/home/batela/cnf/saio.cnf")->GetValue("logproperties") );
 	log.info("%s: %s",__FILE__, "Iniciando aplicacion de gruas...");
-/*
-	//Inicializamos el publcador para el IHM
-	RabbitConnection rc(Env::getInstance()->GetValue("logproperties"),Env::getInstance()->GetValue("logproperties"));
-	rc.initialize();
 
+	//Inicializamos el publcador para el IHM
+	//RabbitConnection rc(Env::getInstance()->GetValue("logproperties"),Env::getInstance()->GetValue("logproperties"));
+	//rc.initialize();
+	/*
 	//Inicializamos la brujula
 	HMC5883L brj;
 	brj.initialize();
@@ -43,25 +43,32 @@ int main() {
 	Explorador *exGps 		= new Explorador (gps,gpsPort,true);
 
 	//Inicializamos la conexión la MOXA para obtener la posicion del brazo
-
-	sleep (1000);
+	/*
+		---- Se anula para la pruebas--- No hace falta
 	IOEnlace *brazo = new IOEnlace();
 	MODBUSPuerto *moxaPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertomoxa"), 9600);
 	MODBUSExplorador *exBrazo = new MODBUSExplorador (brazo,moxaPort);
-
+	*/
 	//Inicializamos la comunicacion con el CATOS
+	/*
+	 * ---- Se anula para la pruebas--- No hace falta
 	CATOSEnlace *cts 			= new CATOSEnlace();
 	RS232Puerto *ctsPort 	= new RS232Puerto(Env::getInstance()->GetValue("puertocatos"), 9600);
 	Explorador *exCatos 	= new Explorador (cts,ctsPort,false);
-
+	*/
+	CATOSEnlace *cts 			= new CATOSEnlace();
+	char mensaje [255];
 	while (true){
 		//float angBrujula = brj.getBearing(); //Leemos lo que nos de la brujula
-		if (gps->getGPS()->getCalidad() > 0){
-
+		//if (gps->getGPS()->getCalidad() > 0){
+		if (true){
 			if (gLat != gps->getGPS()->getLatitud() || gLon != gps->getGPS()->getLongitud() ){
 				gLat = gps->getGPS()->getLatitud();
 				gLon = gps->getGPS()->getLongitud();
 				campa.CalcularPosicion(gLat,gLon,pg);
+
+				sprintf (mensaje,"DATAGPS;%s;%s;%d;%c;%c;%f;%f;23:14:56",pg.getLat().data(),pg.getLon().data(), gps->getGPS()->getSatelites(),pg.getCalle(),pg.getBloque(),pg.getXNOATUM(),pg.getYNOATUM());
+				log.debug("%s: %s %s",__FILE__, "Mensaje a IHM: ", mensaje);
 				//TRAMA GPS  :DATAGPS;LAT;LONG;NUMGPS;CALLE;BLOQUE;DISTX;DISTY;FECHA
 				//DATAGPS;45º34'34''N; 03º34'34'' W;8;2;B;499;233;23:14:56
 				//TRAMA GRUA :DATAGRUA;LONG;ANGULO;LOCKS;FECHA

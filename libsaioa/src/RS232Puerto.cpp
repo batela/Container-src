@@ -11,11 +11,24 @@ namespace container {
 extern log4cpp::Category &log;
 
 
-	RS232Puerto::RS232Puerto(string id,int baudrate) : Puerto(id,RS232){
+	RS232Puerto::RS232Puerto(string id,int baudrate) : Puerto(id,RS232)
+	{
+		configuraVelocidad(baudRate);
+		this->charSize = SerialStreamBuf::CHAR_SIZE_8;
+		this->parity =   SerialStreamBuf::PARITY_NONE;
+		this->stopBits = 1;
+	}
+
+	RS232Puerto::RS232Puerto(string id,int baudRate,int charSize,int parity,int stopBits) : Puerto(id,RS232)
+	{
+		configuraVelocidad(baudRate);
+		configuraBitsDatos(charSize);
+		configuraParidad(parity);
+		this->stopBits = stopBits;
 	}
 
 	RS232Puerto::~RS232Puerto() {
-	// TODO Auto-generated destructor stub
+
 	}
 
 	int RS232Puerto::abrir(){
@@ -25,21 +38,21 @@ extern log4cpp::Category &log;
 			return -1;
 		}
 		// Default configuration
-		serial_port.SetBaudRate( SerialStreamBuf::BAUD_9600 ) ;
+		serial_port.SetBaudRate( this->baudRate ) ;
 		if ( ! serial_port.good() ){
 			return(-1) ;
 		}
 		//
 		// Set the number of data bits.
 		//
-		serial_port.SetCharSize( SerialStreamBuf::CHAR_SIZE_8 ) ;
+		serial_port.SetCharSize( this->charSize) ;
 		if ( ! serial_port.good() ){
 			return(-1) ;
 		}
 		//
 		// Disable parity.
 		//
-		serial_port.SetParity( SerialStreamBuf::PARITY_NONE ) ;
+		serial_port.SetParity( this->parity ) ;
 		if ( ! serial_port.good() ){
 			return(-1) ;
 		}
@@ -92,7 +105,7 @@ extern log4cpp::Category &log;
 		return count;
 	}
 
-	int RS232Puerto::leerSimple (char data){
+	int RS232Puerto::leerSimple (char &data){
 			int count = 0 ;
 			int res = 0;
 
@@ -101,9 +114,63 @@ extern log4cpp::Category &log;
 			}
 
 			return res;
-		}
+	}
 	int RS232Puerto::escribir (char buffer[], int count){
 			serial_port.write( buffer, count ) ;
 			return 0;
+	}
+
+	void RS232Puerto::configuraVelocidad (int a){
+		switch (a){
+			case 1200:
+					this->baudRate = SerialStreamBuf::BAUD_1200 ;
+			break;
+			case 9600:
+				this->baudRate = SerialStreamBuf::BAUD_9600 ;
+			break;
+			case 115200:
+				this->baudRate = SerialStreamBuf::BAUD_115200 ;
+			break;
+			case 19200:
+				this->baudRate = SerialStreamBuf::BAUD_19200 ;
+			break;
+			default:
+				log.error("%s: %s %d %s",__FILE__, "Velocidad de puerto no definida: ", a , " usando 9600");
+				this->baudRate = SerialStreamBuf::BAUD_9600 ;
+			break;
 		}
+	}
+	void RS232Puerto::configuraParidad (int a){
+		switch (a){
+			case 0:
+				this->parity = SerialStreamBuf::PARITY_NONE;
+			break;
+			case 1:
+				this->parity = SerialStreamBuf::PARITY_ODD;
+			break;
+			case 2:
+				this->parity = SerialStreamBuf::PARITY_EVEN;
+			break;
+			default:
+				log.error("%s: %s %d %s",__FILE__, "Paridad de puerto no definida: ", a , " usando PAR");
+				this->parity = SerialStreamBuf::PARITY_NONE ;
+			break;
+		}
+	}
+
+	void RS232Puerto::configuraBitsDatos (int a){
+		switch (a){
+			case 7:
+				this->charSize = SerialStreamBuf::CHAR_SIZE_7;
+			break;
+			case 8:
+				this->charSize = SerialStreamBuf::CHAR_SIZE_8;
+			break;
+			default:log.error("%s: %s %d %s",__FILE__, "Bits de Datos de puerto no definida: ", a , " usando 8");
+				this->charSize = SerialStreamBuf::CHAR_SIZE_8 ;
+			break;
+		}
+
+	}
+
 } /* namespace container */

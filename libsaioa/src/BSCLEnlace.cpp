@@ -10,23 +10,28 @@
 namespace container {
 extern log4cpp::Category &log;
 
-BSCLEnlace::BSCLEnlace() {
+BSCLEnlace::BSCLEnlace( int pesajescorrectos, int margenpesaje) {
 	SetStartByte(0x02);
 	SetEndByte(0x03);
-
+	numeroPesaje  		= 0 ;
+	pesajesCorrectos 	= pesajescorrectos;
+	margenPesaje 			= margenpesaje;
 }
 
 BSCLEnlace::~BSCLEnlace() {
-	// TODO Auto-generated destructor stub
 }
 
-int BSCLEnlace::analizaTrama(char buffer[]){
+void BSCLEnlace::Configure(string a , string b) {
+	pesajesCorrectos 	= atoi(a.data());
+	margenPesaje 		= atoi(b.data());
+}
+
+int BSCLEnlace::analizaTrama(char *buffer){
 	int res = -1;
 	char peso[10];
-	char data[10];
 	if (VerificaTrama(buffer) == 0){
 		memset (peso,0,10);
-		memcpy (&buffer[3],peso,5);
+		memcpy (peso, &buffer[3],5);
 		vector<std::string> items;
 		items.push_back(&buffer[2]);
 		items.push_back(&buffer[3]);
@@ -39,18 +44,38 @@ int BSCLEnlace::analizaTrama(char buffer[]){
 	return res;
 }
 
-int BSCLEnlace::VerificaTrama (char buffer[])
+int BSCLEnlace::VerificaTrama (char *buffer)
 {
-	log.info("%s: %s",__FILE__, "Comenzando funcion..");
-	log.info("%s: %s",__FILE__, "Terminando funcion!!");
-	return 0;
+	int res = 0 ;
+	//log.info("%s: %s",__FILE__, "Comenzando funcion..");
+	if ((buffer[0] != 0x02) || strlen(buffer) != 9 || (buffer[8] != 0x03)) {
+		log.warn("%s: %s",__FILE__, "Trama recibida erronea");
+		res = 1;
+	}
+	//log.info("%s: %s",__FILE__, "Terminando funcion!!");
+	return res;
 }
 
 int BSCLEnlace::completaBSCL (vector<std::string> items, Bascula &bsc){
-	log.info("%s: %s",__FILE__, "Comenzando funcion..");
-	bsc.SetPeso(atoi(items[2].data()));
+	log.debug("%s: %s",__FILE__, "Comenzando funcion.. completar bascula");
+
+	int peso = atoi(items[2].data());
+	bsc.SetSigno(items[0].at(0));
+	if ((peso > 0) && (abs(peso - bsc.GetPeso()) < margenPesaje)) {
+		if (numeroPesaje++ >= pesajesCorrectos){
+			bsc.SetEstable(true);
+			bsc.SetPeso (peso);
+			log.info("%s: %s %d",__FILE__, "Identificado pesaje correcto::>>" , peso);
+			numeroPesaje = 0;
+		}
+	}
+	else{
+		numeroPesaje = 0 ;
+		bsc.SetEstable(false);
+		bsc.SetPeso (peso);
+	}
 	//bsc.SetSigno((char)items[1].data());
-	log.info("%s: %s",__FILE__, "Terminando funcion!!");
+	log.debug("%s: %s",__FILE__, "Terminando funcion!!");
 	return 0;
 }
 

@@ -19,11 +19,14 @@
 */
 
 
-#include "../include/service.h"
 #include <string>
+#include "../include/service.h"
+
+
 bool verbose=true;
 using namespace std;
-
+using namespace std;
+extern BSCLEnlace *bscl;
 service_resource::service_resource()
 {}
 
@@ -36,17 +39,19 @@ void service_resource::render_GET(const http_request &req, http_response** res)
 	map <string , string,arg_comparator> queryitems;
 
   if (verbose) std::cout << req;
-  string response;
+  string response= "";
   string operation = req.get_arg("op");
   req.get_args(queryitems);
 
   //Tratamiento  de la query
   if (operation.compare("historico")==0)
   	this->getDBHistoricData(queryitems.find("startdate")->second,queryitems.find("enddate")->second,response);
-  else if (operation.compare("maxdia") == 0)
-  	this->getDBMaxDayData(queryitems.find("today")->second,response);
+  else if (operation.compare("max") == 0)
+  	this->getDBMaxDayData(queryitems.find("startdate")->second,queryitems.find("enddate")->second,queryitems.find("count")->second,response);
   else if(operation.compare("ultimo") == 0)
   	this->getLastData(response);
+  else if(operation.compare("ultimosdiez") == 0)
+    	this->getLastTenData(response);
   else std::cout << "Operacion: " << req.get_arg("op") << " no localizada."<<"\n";
 
   *res = new http_response(http_response_builder(response, 200).string_response());
@@ -131,35 +136,64 @@ void service_resource::render_DELETE(const http_request &req, http_response** re
 
     if (verbose) std::cout << **res;    
 }
-
-void service_resource::getDBMaxDayData(string today,string &data)
+/*
+ * http://192.168.24.109:9898/service?op=max&startdate=2014-12-26&enddate=2014-12-27&count=limit
+ */
+void service_resource::getDBMaxDayData(string startdate, string enddate,string count,string &data)
 {
-	std::cout << "getDBMaxDayData today:" << today << std::endl;
+	std::cout << "getDBMaxDayData today:" << startdate << " end " << enddate << " count " << count << std::endl;
 
-	/*
-	DBPesaje db("/home/batela/db/kemen.db");
+	DBPesaje db("/home/batela/bascula/db/kemen.db");
 	db.Open();
-	//db.ReadMaxDayData(today,data);
+	db.ReadMaxDayData(startdate,enddate,count,data);
 	std::cout << data;
 	db.Close();
-*/
 }
-
+/**
+ * http://192.168.24.109:9898/service?op=historico&startdate=2014-12-26&enddate=2014-12-27
+ */
 void service_resource::getDBHistoricData(string startdate, string enddate,string &data)
 {
 	std::cout << "getDBHistoricData start:" << startdate << " end " << enddate << std::endl;
-	/*
-	DBPesaje db("/home/batela/db/kemen.db");
+
+	DBPesaje db("/home/batela/bascula/db/kemen.db");
 	db.Open();
-	//db.ReadHistoricData(startdate,enddate,data);
+	db.ReadHistoricData(startdate,enddate,data);
 	std::cout << data;
 	db.Close();
-	*/
+}
+
+/**
+ * http://192.168.24.109:9898/service?op=ultimosdiez
+ */
+void service_resource::getLastTenData(string &data)
+{
+	std::cout << "getLastTenData start:" << std::endl;
+
+	DBPesaje db("/home/batela/bascula/db/kemen.db");
+	db.Open();
+	db.ReadLastTenData(data);
+	std::cout << data;
+	db.Close();
 }
 
 void service_resource::getLastData(string &data)
 {
 
+	std::cout << "getLastData.... "<< std::endl;
+
+	char raw[256];
+	char now [20];
+	time_t rawtime;
+	struct tm * timeinfo;
+	time (&rawtime);
+	timeinfo = localtime (&rawtime);
+	strftime (now,20,"%F %T",timeinfo);
+	char isValido = (bscl->getBSCL()->GetEstable()==true)?'V':'N';
+	//sprintf(raw,"%d;%c;%c;%d;%s\n",1,isValido,bscl->getBSCL()->GetSigno(),bscl->getBSCL()->GetPeso(),now);
+	sprintf(raw,"%d;%c;%c;%d;%s\n",1,isValido,bscl->getBSCL()->GetSigno(),bscl->getBSCL()->GetPeso(),now);
+	data =  raw;
+	std::cout << "enviado: " << data << std::endl;
 }
 
 /*

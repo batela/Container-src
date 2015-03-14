@@ -6,6 +6,8 @@
  */
 
 #include "../include/MODBUSPuerto.h"
+#include <stdio.h>
+#include <string.h>
 using namespace std;
 namespace container {
 	extern log4cpp::Category &log;
@@ -24,23 +26,33 @@ namespace container {
 		struct timeval response_timeout;
 		response_timeout.tv_sec = 1;
 		response_timeout.tv_usec = 0;
+		errno= 0;
 		if ((ctx = modbus_new_rtu(this->getName().data(), baudrate, 'N', 8, 1)) != NULL){
+			log.error("%s: %s %s",__FILE__, "Set slave error: ",modbus_strerror(errno));
 			modbus_set_slave(ctx, 0x01);
+			log.error("%s: %s %s",__FILE__, "Set slave error: ",modbus_strerror(errno));
 			modbus_set_response_timeout(ctx, &response_timeout);
+			log.error("%s: %s %s",__FILE__, "Set timeout error",modbus_strerror(errno));
 			if (modbus_connect(ctx) == -1) {
-				//modbus_strerror(errno);
+				log.error("%s: %s %s",__FILE__, "Error al abrir puerto!",modbus_strerror(errno));
 				modbus_free(ctx);
 				res = 1;
+				this->isOpen = false ;
+
 			}
-			else res = 0 ;
+			else {
+				this->isOpen = true ;
+				res = 0 ;
+				log.info("%s: %s",__FILE__, "Puerto abierto!!");
+			}
 		}
-		log.info("%s: %s",__FILE__, "Puerto abierto!!");
 		return res ;
 	}
 
 	void MODBUSPuerto::cerrar(){
 		modbus_close(ctx);
 		modbus_free(ctx);
+		this->isOpen = false;
 	}
 
 	int MODBUSPuerto::reabrir(){
@@ -51,12 +63,15 @@ namespace container {
 	 * Devuelve -1 si hay error.
 	 */
 	int MODBUSPuerto::leer (int cod, int inicio, int tam,char  buffer[]){
-		log.info("%s: %s",__FILE__, "Inicio funcion leer");
+		log.debug("%s: %s codigo/inicio %d - %d",__FILE__, "Inicio funcion leer",cod, inicio);
 		int count = 0 ;
 		switch (cod){
 		case 0x01:
-			if ((count =  modbus_read_input_bits(ctx,inicio,tam, (unsigned char*)buffer)) == -1){
-					log.error("%s\n", modbus_strerror(errno));
+			if ((count =  modbus_read_input_bits(ctx,inicio,tam, (unsigned char*) buffer)) == -1){
+					log.error("%s: %s %s",__FILE__, "Error leyendo modbuss", modbus_strerror(errno));
+			}
+			else {
+				//memcpy (buffer,data,127);
 			}
 			break;
 		}

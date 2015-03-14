@@ -22,6 +22,7 @@ namespace container {
 class RS232Puerto: public container::Puerto {
 public:
 	RS232Puerto(string id, int br=9600);
+	RS232Puerto(string id,int baudRate,int charSize,int parity,int stopBits);
 	virtual ~RS232Puerto();
 	int abrir();
 	void cerrar();
@@ -30,7 +31,14 @@ public:
 	int leerSimple (char &data);
 	int escribir (char buffer[], int count);
 private:
-	int baudrate;
+	void configuraVelocidad (int a);
+	void configuraParidad 	(int a);
+	void configuraBitsDatos (int a);
+
+	SerialStreamBuf::BaudRateEnum 	baudRate;
+	SerialStreamBuf::ParityEnum 	parity;
+	SerialStreamBuf::CharSizeEnum charSize;
+	int 	stopBits;
 	SerialStream serial_port ;
 };
 

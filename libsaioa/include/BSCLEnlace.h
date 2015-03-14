@@ -10,20 +10,24 @@
 
 #include "Enlace.h"
 #include "Bascula.h"
-
 namespace container {
 
 class BSCLEnlace: public Enlace {
 public:
-	BSCLEnlace();
+	BSCLEnlace(int a , int b);
 	virtual ~BSCLEnlace();
-	int analizaTrama (char buffer []);
-	int VerificaTrama (char buffer[]);
+	int analizaTrama (char *buffer);
+	int VerificaTrama (char *buffer);
 	Bascula * getBSCL () {return &bascula;} ;
-
+	void Configure (string a, string b);
 private:
 	int completaBSCL (vector<std::string> items, Bascula &gps);
+	int numeroPesaje ;
+	int margenPesaje;
+	int pesajesCorrectos;
+
 	Bascula bascula;
+
 };
 
 } /* namespace container */
