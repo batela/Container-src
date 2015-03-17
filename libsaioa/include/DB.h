@@ -25,7 +25,7 @@ public:
 	virtual ~DB();
 	bool Open ();
 	void Close ();
-
+	bool isOpen (){return open;};
 protected:
 	sqlite3 *db;
 private:

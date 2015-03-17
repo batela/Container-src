@@ -36,11 +36,12 @@ public:
 	void getDBHistoricData(string startdate, string enddate,string &data);
 	void getLastData(string &data);
 	void getLastTenData(string &data);
+	void reiniciar();
 
 private:
 
 	pthread_mutex_t mtxService;
-
+	DBPesaje *db;
 
 };
 

@@ -94,13 +94,12 @@ int DBPesaje::ReadLastTenData (string &data){
 
 	log.info("%s-%s: %s", __FILE__,__FUNCTION__, "Starting function..") ;
 
-	bool res = false ;
+	int isError = 1;
 	string sql ="SELECT * FROM thistorico ORDER BY fecha DESC LIMIT 10;";
 	log.debug("%s-%s: %s %s", __FILE__,__FUNCTION__, "Executing query:" , sql.data()) ;
 
 	int idCanal;
 	double valor = 0 ;
-	double valorReferencia = 0 ;
 	string fecha;
   sqlite3_stmt *statement;
   if ( sqlite3_prepare(db,sql.c_str(),-1,&statement,0) == SQLITE_OK ) {
@@ -121,10 +120,11 @@ int DBPesaje::ReadLastTenData (string &data){
       	data = data + raw;
       }
     }
+    isError = 0;
   }
   if (data.compare("")== 0) data = "NO DATA\n";
   log.info("%s-%s: %s", __FILE__,__FUNCTION__, "Ending function..") ;
-	return res ;
+	return isError ;
 }
 
 int DBPesaje::InsertData (int canal,float valor){

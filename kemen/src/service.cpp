@@ -30,10 +30,14 @@ extern BSCLEnlace *bscl;
 service_resource::service_resource()
 {
 	pthread_mutex_init(&mtxService, NULL);
+	db = new DBPesaje("/home/batela/bascula/db/kemen.db");
+	db->Open();
 }
 
 service_resource::~service_resource()
-{}
+{
+	db->Close();
+}
 
 void service_resource::render_GET(const http_request &req, http_response** res)
 {
@@ -41,7 +45,8 @@ void service_resource::render_GET(const http_request &req, http_response** res)
 	pthread_mutex_lock(&mtxService);
 	map <string , string,arg_comparator> queryitems;
 
-  if (verbose) std::cout << req;
+	if (db->isOpen()==false) db->Open();
+
   string response= "";
   string operation = req.get_arg("op");
   req.get_args(queryitems);
@@ -54,6 +59,8 @@ void service_resource::render_GET(const http_request &req, http_response** res)
   	this->getLastData(response);
   else if(operation.compare("ultimosdiez") == 0)
     	this->getLastTenData(response);
+  else if(operation.compare("reiniciar") == 0)
+      	this->reiniciar();
   else std::cout << "Operacion: " << req.get_arg("op") << " no localizada."<<"\n";
 
   *res = new http_response(http_response_builder(response, 200).string_response());
@@ -173,12 +180,18 @@ void service_resource::getDBHistoricData(string startdate, string enddate,string
 void service_resource::getLastTenData(string &data)
 {
 	std::cout << "getLastTenData start:" << std::endl;
-
+	if (db->ReadLastTenData(data) != 0) db->Close();
+	/*
 	DBPesaje db("/home/batela/bascula/db/kemen.db");
 	db.Open();
 	db.ReadLastTenData(data);
-	//std::cout << data;
 	db.Close();
+	*/
+}
+
+void service_resource::reiniciar()
+{
+	system("sudo shutdown -r 0");
 }
 
 void service_resource::getLastData(string &data)

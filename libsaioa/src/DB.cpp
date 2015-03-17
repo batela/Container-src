@@ -34,6 +34,7 @@ bool DB::Open ()	{
 	if(rc){
 		log.error("%s-%s: %s", __FILE__,__FUNCTION__, "Can't open database") ;
 	  sqlite3_close(db) ;
+	  db = NULL;
 	} else {
 		log.info("%s-%s: %s", __FILE__,__FUNCTION__, "Open database successfully") ;
 	  res = true ;
@@ -89,7 +90,6 @@ void DB::Close ()	{
 
 	if (db != NULL) sqlite3_close(db);
 	open = false;
-
 	log.info("%s-%s: %s", __FILE__,__FUNCTION__, "Ending function..") ;
 }
 } /* namespace a2pbeer */

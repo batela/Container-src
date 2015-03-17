@@ -91,17 +91,21 @@ void * PesaContainer (void * exBascula){
 			tim.tv_nsec = 200 * 1000000L;
 			int peso = ((BSCLEnlace*)ex->getEnlace())->getBSCL()->GetPeso();
 			if (((BSCLEnlace*)ex->getEnlace())->getBSCL()->GetSigno() !='-'){
-				log.info("%s: %s",__FILE__, "Lectura Pesaje....");
 				pesos.push_back(peso);
 				if (pesajes++<= pesajesCorrectos) nanosleep(&tim , &tim2);
 			}
 		}
+		std::vector<int>::iterator itFin;
+		std::vector<int>::iterator itIni;
 		//Actualizamos la base de datos
 		if (pesajes>= pesajesCorrectos){
+			itFin=pesos.end();
+			itIni=pesos.begin();
+			std::sort(itIni,itFin);
 			for(std::vector<int>::iterator it = pesos.begin(); it != pesos.end(); ++it) {
-			    if (pesoMaximo < *it) pesoMaximo= *it;
-			    pesoMedio = pesoMedio + *it;
-			    log.info("%s: %s %d",__FILE__, " >>>Peso leido...",*it);
+				if (pesoMaximo < *it) pesoMaximo= *it;
+			  pesoMedio = pesoMedio + *it;
+			  log.info("%s: %s %d",__FILE__, " >>>Peso leido...",*it);
 			}
 			pesoMedio = pesoMedio / pesos.size();
 			log.info("%s: %s %d",__FILE__, "Peso Maximo container calculado...",pesoMaximo);
