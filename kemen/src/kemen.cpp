@@ -62,6 +62,25 @@ int PesaContainer (Explorador * exBascula){
 bool pesando 			= false ;
 bool pesajeHecho 	= false ;
 
+
+int CalcularPeso (vector <int> pesos, float pesoMedio){
+	int res = -1 ;
+	int imin = 0;
+	int imax = pesos.size();
+	int indx = 0 ;
+	std::sort(pesos.begin(),pesos.end());
+	int *valores = &pesos[0];
+	int indices[pesos.size()];
+  for (int i = 0 ; i < pesos.size();i++){
+  	int imax = pesos.size();
+  	while ((valores[imax-1] - valores[i]) >0) imax--;
+  	indices[i] = imax - i;
+  }
+  //std::sort(indices[0],indices[pesos.size()-1]);
+
+	return res;
+}
+
 void * PesaContainer (void * exBascula){
 
 	DBPesaje db("/home/batela/bascula/db/kemen.db");
@@ -95,20 +114,15 @@ void * PesaContainer (void * exBascula){
 				if (pesajes++<= pesajesCorrectos) nanosleep(&tim , &tim2);
 			}
 		}
-		std::vector<int>::iterator itFin;
-		std::vector<int>::iterator itIni;
 		//Actualizamos la base de datos
 		if (pesajes>= pesajesCorrectos){
-			itFin=pesos.end();
-			itIni=pesos.begin();
-			std::sort(itIni,itFin);
 			for(std::vector<int>::iterator it = pesos.begin(); it != pesos.end(); ++it) {
 				if (pesoMaximo < *it) pesoMaximo= *it;
 			  pesoMedio = pesoMedio + *it;
 			  log.info("%s: %s %d",__FILE__, " >>>Peso leido...",*it);
 			}
 			pesoMedio = pesoMedio / pesos.size();
-			log.info("%s: %s %d",__FILE__, "Peso Maximo container calculado...",pesoMaximo);
+			log.debug("%s: %s %d",__FILE__, "Peso Maximo container calculado...",pesoMaximo);
 			log.info("%s: %s %f",__FILE__, "Peso-Medio container calculado...",pesoMedio);
 			pesajeHecho = true;
 			db.Open();
