@@ -33,14 +33,6 @@ int BSCLEnlace::analizaTrama(char *buffer){
 		memset (peso,0,10);
 		memcpy (peso, &buffer[3],5);
 		completaBSCL(atoi(peso),buffer[2],this->bascula);
-		/*
-		vector<std::string> items;
-
-		items.push_back(&buffer[2]); //signo
-		items.push_back(&buffer[3]); //signo
-		items.push_back(peso);
-		completaBSCL(items,this->bascula);
-		*/
 	}
 	else {
 		log.error("%s: %s",__FILE__, "Trama Bascula incorrecta");

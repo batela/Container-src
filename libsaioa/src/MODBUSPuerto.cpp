@@ -66,14 +66,23 @@ namespace container {
 		log.debug("%s: %s codigo/inicio %d - %d",__FILE__, "Inicio funcion leer",cod, inicio);
 		int count = 0 ;
 		switch (cod){
-		case 0x01:
-			if ((count =  modbus_read_input_bits(ctx,inicio,tam, (unsigned char*) buffer)) == -1){
+			case 0x01:
+				if ((count =  modbus_read_input_bits(ctx,inicio,tam, (unsigned char*) buffer)) == -1){
 					log.error("%s: %s %s",__FILE__, "Error leyendo modbuss", modbus_strerror(errno));
-			}
-			else {
-				//memcpy (buffer,data,127);
-			}
+				}
 			break;
+			case 0x02:
+				log.warn("%s: %s",__FILE__, "Codigo modbus 0x02 no implementado");
+			break;
+			case 0x03:
+				if ((count =  modbus_read_registers(ctx,inicio,tam, (unsigned short int*) buffer)) == -1){
+					log.error("%s: %s %s",__FILE__, "Error leyendo modbuss", modbus_strerror(errno));
+				}
+			break;
+			case 0x04:
+				log.warn("%s: %s",__FILE__, "Codigo modbus 0x04 no implementado");
+			break;
+
 		}
 
 		log.debug("%s: %s",__FILE__, "Fin funcion leer modbus!!");

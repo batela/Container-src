@@ -36,10 +36,12 @@ public:
 	bool sigue ;
 	Puerto * getPuerto (){return puerto;}
 	Enlace * getEnlace (){return enlace;}
+protected:
+	pthread_t idThLector;
 private:
 	Enlace* enlace;
 	Puerto* puerto;
-	pthread_t idThLector;
+
 	//thread first;     // spawn new thread that calls foo()
 };
 

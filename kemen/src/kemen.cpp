@@ -1,7 +1,8 @@
 #include "../include/kemen.h"
 extern bool verbose;
 
-BSCLEnlace *bscl = new BSCLEnlace (17,10);
+BSCLEnlace *bscl = new BSCLEnlace (0,0);
+DX80Enlace *dx80 = new DX80Enlace ();
 log4cpp::Category &log  = log4cpp::Category::getRoot();
 void * httpservermanager(void * p)
 {
@@ -136,6 +137,62 @@ void * PesaContainer (void * exBascula){
 	return 0;
 }
 
+void * PesaContainerRadio (void * exBascula){
+
+	DBPesaje db("/home/batela/bascula/db/kemen.db");
+	int pesajesCorrectos = atoi(Env::getInstance()->GetValue("pesajescorrectos").data());
+	int pesajes 		= 0 ;
+	float pesoMedio	=0;
+	int pesoMaximo	=0;
+	int esperaPesada = atoi(Env::getInstance()->GetValue("esperapeso").data());
+	MODBUSExplorador* ex = (MODBUSExplorador *) exBascula;
+	vector<int> pesos;
+	struct timespec tim, tim2;
+	tim.tv_sec 	= 0;
+	tim.tv_nsec = 100 * 1000000L; //en milisegundos
+	bool delayHecho = false;
+	while (true){
+		tim.tv_nsec = 100 * 1000000L;
+		pesos.clear();
+		pesajes = pesoMedio = 0;
+
+		log.debug("%s: %s",__FILE__, "Esperando señal de pesado");
+		delayHecho = false;
+		while (pesando==true && pesajes< pesajesCorrectos && pesajeHecho == false){
+			if (delayHecho == false) {
+				sleep (esperaPesada);
+				delayHecho = true;
+			}
+			tim.tv_nsec = 200 * 1000000L;
+			int peso = ((DX80Enlace*)ex->getEnlace())->getDX()->getPeso();
+			if (((DX80Enlace*)ex->getEnlace())->getDX()->getSigno() !='-'){
+				pesos.push_back(peso);
+				if (pesajes++<= pesajesCorrectos) nanosleep(&tim , &tim2);
+			}
+		}
+		//Actualizamos la base de datos
+		if (pesajes>= pesajesCorrectos){
+			for(std::vector<int>::iterator it = pesos.begin(); it != pesos.end(); ++it) {
+				if (pesoMaximo < *it) pesoMaximo= *it;
+			  pesoMedio = pesoMedio + *it;
+			  log.info("%s: %s %d",__FILE__, " >>>Peso leido...",*it);
+			}
+			pesoMedio = pesoMedio / pesos.size();
+			log.debug("%s: %s %d",__FILE__, "Peso Maximo container calculado...",pesoMaximo);
+			log.info("%s: %s %f",__FILE__, "Peso-Medio container calculado...",pesoMedio);
+			pesajeHecho = true;
+			db.Open();
+			db.InsertData(1,pesoMedio);
+			db.Close();
+		}
+
+		//Esperamos por defecto 100ms
+		nanosleep(&tim , &tim2);
+	}
+	return 0;
+}
+
+
 int main(int argc, char **argv) {
 
 	pthread_t idThLector;
@@ -149,13 +206,6 @@ int main(int argc, char **argv) {
 
 	bscl->Configure(Env::getInstance()->GetValue("pesajescorrectos"), Env::getInstance()->GetValue("margenpesajes"));
 
-	Env::getInstance()->GetValue("puertobascula");
-  //baudrate,char_size,parity,stopbits
-	int baudios 		= atoi(Env::getInstance()->GetValue("baudiosbascula").data());
-	int bitsdatos 	= atoi(Env::getInstance()->GetValue("bitsbascula").data());
-	int bitsparada 	= atoi(Env::getInstance()->GetValue("bitsparadabascula").data());
-	RS232Puerto *bsclPort = new RS232Puerto(Env::getInstance()->GetValue("puertobascula"), baudios,bitsdatos,0,bitsparada);
-	Explorador 	*exBSCL		= new Explorador (bscl,bsclPort,true);
 
 	//Configuramos el lecto IO
 	struct timespec tim, tim2;
@@ -175,9 +225,29 @@ int main(int argc, char **argv) {
 	MODBUSExplorador *exGarra = new MODBUSExplorador (io,moxaPort);
 
 
+	if (atoi(Env::getInstance()->GetValue("usadisplay").data())>0){
+		Env::getInstance()->GetValue("puertobascula");
+			//baudrate,char_size,parity,stopbits
+		int baudios 		= atoi(Env::getInstance()->GetValue("baudiosbascula").data());
+		int bitsdatos 	= atoi(Env::getInstance()->GetValue("bitsbascula").data());
+		int bitsparada 	= atoi(Env::getInstance()->GetValue("bitsparadabascula").data());
+		RS232Puerto *bsclPort = new RS232Puerto(Env::getInstance()->GetValue("puertobascula"), baudios,bitsdatos,0,bitsparada);
+		Explorador 	*exBSCL		= new Explorador (bscl,bsclPort,true);
+
+		pthread_create( &idThPesaje, NULL, PesaContainer,exBSCL);
+	}
+	else{
+		MODBUSPuerto *dxPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertodx80"), 19200);
+
+		MODBUSExplorador 	*exBSCL		= new MODBUSExplorador (dx80,dxPort);
+
+		pthread_create( &idThPesaje, NULL, PesaContainerRadio,exBSCL);
+
+	}
+
 	//Finalmente lanzamos el thread http
 	pthread_create( &idThLector, NULL, httpservermanager,NULL);
-	pthread_create( &idThPesaje, NULL, PesaContainer,exBSCL);
+
 	estado = ESPERA_CARRO_ENVIA ;
 	while (true){
 		log.debug("%s: %s",__FILE__, "Lanzando lectura de módulo IO");

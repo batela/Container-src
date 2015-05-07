@@ -10,6 +10,7 @@
 
 #include "Explorador.h"
 #include "MODBUSPuerto.h"
+#include "configini.h"
 namespace container {
 
 class MODBUSExplorador: public Explorador {
@@ -17,6 +18,12 @@ public:
 	MODBUSExplorador(Enlace* e, Puerto* p);
 	virtual ~MODBUSExplorador();
 	int Explora ();
+private:
+	void LanzarExplorador();
+	void ExploraEquipo();
+	void LeerHoldingRegisters(int kc);
+	void LeerInputRegisters(int kc);
+	Config* cfg;
 };
 
 } /* namespace container */

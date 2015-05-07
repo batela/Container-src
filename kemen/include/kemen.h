@@ -22,6 +22,7 @@
 #include "Explorador.h"
 #include "MODBUSExplorador.h"
 #include "DBPesaje.h"
+#include "DX80Enlace.h"
 using namespace std;
 using namespace container;
 //enum ESTADO {LOCK_ABIERTO, LOCK_CERRADO, PESADO, ATRAPADO, SUBIENDO, SOLTADO,ERROR,ESPERA_ABRIR,FIN };
