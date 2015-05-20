@@ -106,7 +106,6 @@ extern log4cpp::Category &log;
 	}
 
 	int RS232Puerto::leerSimple (char &data){
-			int count = 0 ;
 			int res = 0;
 
 			if( (res = serial_port.rdbuf()->in_avail()) > 0  ){

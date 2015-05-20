@@ -23,22 +23,21 @@ namespace container {
 	int MODBUSPuerto::abrir(){
 		log.info("%s: %s %s",__FILE__, "Comienza abrir puerto..",this->getName().data());
 		int res = 1 ;
-		struct timeval response_timeout;
-		response_timeout.tv_sec = 1;
-		response_timeout.tv_usec = 0;
+		//struct timeval response_timeout;
+		//response_timeout.tv_sec = 1;
+		//response_timeout.tv_usec = 0;
 		errno= 0;
 		if ((ctx = modbus_new_rtu(this->getName().data(), baudrate, 'N', 8, 1)) != NULL){
 			log.error("%s: %s %s",__FILE__, "Set slave error: ",modbus_strerror(errno));
 			modbus_set_slave(ctx, 0x01);
-			log.error("%s: %s %s",__FILE__, "Set slave error: ",modbus_strerror(errno));
-			modbus_set_response_timeout(ctx, &response_timeout);
+			//log.error("%s: %s %s",__FILE__, "Set slave error: ",modbus_strerror(errno));
+			//modbus_set_response_timeout(ctx, &response_timeout);
 			log.error("%s: %s %s",__FILE__, "Set timeout error",modbus_strerror(errno));
 			if (modbus_connect(ctx) == -1) {
 				log.error("%s: %s %s",__FILE__, "Error al abrir puerto!",modbus_strerror(errno));
 				modbus_free(ctx);
 				res = 1;
 				this->isOpen = false ;
-
 			}
 			else {
 				this->isOpen = true ;
@@ -75,17 +74,19 @@ namespace container {
 				log.warn("%s: %s",__FILE__, "Codigo modbus 0x02 no implementado");
 			break;
 			case 0x03:
-				if ((count =  modbus_read_registers(ctx,inicio,tam, (unsigned short int*) buffer)) == -1){
+				if ((count =  modbus_read_input_registers(ctx,inicio,tam, (unsigned short int*) buffer)) == -1){
 					log.error("%s: %s %s",__FILE__, "Error leyendo modbuss", modbus_strerror(errno));
 				}
 			break;
 			case 0x04:
-				log.warn("%s: %s",__FILE__, "Codigo modbus 0x04 no implementado");
+				if ((count =  modbus_read_registers(ctx,inicio,tam, (unsigned short int*) buffer)) == -1){
+					log.error("%s: %s %s",__FILE__, "Error leyendo modbuss", modbus_strerror(errno));
+				}
 			break;
 
 		}
 
-		log.debug("%s: %s",__FILE__, "Fin funcion leer modbus!!");
+		log.debug("%s: %s %d",__FILE__, "Fin funcion leer modbus, resultado:", count);
 		return count;
 	}
 

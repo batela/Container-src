@@ -66,18 +66,6 @@ bool pesajeHecho 	= false ;
 
 int CalcularPeso (vector <int> pesos, float pesoMedio){
 	int res = -1 ;
-	int imin = 0;
-	int imax = pesos.size();
-	int indx = 0 ;
-	std::sort(pesos.begin(),pesos.end());
-	int *valores = &pesos[0];
-	int indices[pesos.size()];
-  for (int i = 0 ; i < pesos.size();i++){
-  	int imax = pesos.size();
-  	while ((valores[imax-1] - valores[i]) >0) imax--;
-  	indices[i] = imax - i;
-  }
-  //std::sort(indices[0],indices[pesos.size()-1]);
 
 	return res;
 }
@@ -130,8 +118,6 @@ void * PesaContainer (void * exBascula){
 			db.InsertData(1,pesoMedio);
 			db.Close();
 		}
-
-		//Esperamos por defecto 100ms
 		nanosleep(&tim , &tim2);
 	}
 	return 0;
@@ -185,7 +171,6 @@ void * PesaContainerRadio (void * exBascula){
 			db.InsertData(1,pesoMedio);
 			db.Close();
 		}
-
 		//Esperamos por defecto 100ms
 		nanosleep(&tim , &tim2);
 	}
@@ -206,7 +191,6 @@ int main(int argc, char **argv) {
 
 	bscl->Configure(Env::getInstance()->GetValue("pesajescorrectos"), Env::getInstance()->GetValue("margenpesajes"));
 
-
 	//Configuramos el lecto IO
 	struct timespec tim, tim2;
 	tim.tv_sec = 0;
@@ -220,6 +204,8 @@ int main(int argc, char **argv) {
 	int ioPalpa  = atoi(Env::getInstance()->GetValue("iopalpadores").data());
 	int ioTwisl  = atoi(Env::getInstance()->GetValue("iotwislock").data());
 	int ioSubir  = atoi(Env::getInstance()->GetValue("iomandosubir").data());
+
+
 	IOEnlace *io = new IOEnlace();
 	MODBUSPuerto *moxaPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertomoxa"), 9600);
 	MODBUSExplorador *exGarra = new MODBUSExplorador (io,moxaPort);
@@ -227,28 +213,22 @@ int main(int argc, char **argv) {
 
 	if (atoi(Env::getInstance()->GetValue("usadisplay").data())>0){
 		Env::getInstance()->GetValue("puertobascula");
-			//baudrate,char_size,parity,stopbits
 		int baudios 		= atoi(Env::getInstance()->GetValue("baudiosbascula").data());
 		int bitsdatos 	= atoi(Env::getInstance()->GetValue("bitsbascula").data());
 		int bitsparada 	= atoi(Env::getInstance()->GetValue("bitsparadabascula").data());
 		RS232Puerto *bsclPort = new RS232Puerto(Env::getInstance()->GetValue("puertobascula"), baudios,bitsdatos,0,bitsparada);
 		Explorador 	*exBSCL		= new Explorador (bscl,bsclPort,true);
-
 		pthread_create( &idThPesaje, NULL, PesaContainer,exBSCL);
 	}
 	else{
 		MODBUSPuerto *dxPort = new MODBUSPuerto(Env::getInstance()->GetValue("puertodx80"), 19200);
-
-		MODBUSExplorador 	*exBSCL		= new MODBUSExplorador (dx80,dxPort);
-
+		MODBUSExplorador 	*exBSCL		= new MODBUSExplorador (dx80,dxPort,"/home/batela/bascula/cnf/radiocom.cnf");
 		pthread_create( &idThPesaje, NULL, PesaContainerRadio,exBSCL);
-
 	}
 
 	//Finalmente lanzamos el thread http
 	pthread_create( &idThLector, NULL, httpservermanager,NULL);
-
-	estado = ESPERA_CARRO_ENVIA ;
+	estado = ESPERA_CARRO_ENVIA;
 	while (true){
 		log.debug("%s: %s",__FILE__, "Lanzando lectura de módulo IO");
 		if (exGarra->Explora() == 0){

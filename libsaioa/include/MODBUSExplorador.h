@@ -16,6 +16,7 @@ namespace container {
 class MODBUSExplorador: public Explorador {
 public:
 	MODBUSExplorador(Enlace* e, Puerto* p);
+	MODBUSExplorador(Enlace* e, Puerto* p, string file);
 	virtual ~MODBUSExplorador();
 	int Explora ();
 private:
